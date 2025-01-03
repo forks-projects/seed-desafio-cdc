@@ -1,5 +1,6 @@
 package br.com.casadocodigo.casadocodigo.autor;
 
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +22,7 @@ public class NovoAutorController {
     }
 
     @PostMapping("/v1/autores")
+    @Transactional
     public ResponseEntity<?> cadastrar(@Valid @RequestBody NovoAutorRequest novoAutorRequest, UriComponentsBuilder uriBuilder) {
         autorRepository.findByEmail(novoAutorRequest.getEmail()).ifPresent(autor -> {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "O e-mail já está em uso.");
