@@ -53,7 +53,7 @@ public class TratamentoExcecaoHandler {
     public ResponseErroDTO handleGenericException(Exception exception) {
         return new ResponseErroDTO(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                "Erro inesperado",
+                "Erro inesperado: " + exception.getMessage(),
                 new ArrayList<>()
         );
     }
