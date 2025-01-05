@@ -19,9 +19,9 @@ Deixando claro, ter padrões é muito bom. Eles servem para você bater o olho n
 ### Faça um fork para começar o projeto
 Faça um fork desse [REPOSITÓRIO](https://github.com/asouza/seed-desafio-cdc) e implemente seu código nesse fork :).
 
-### Cadastro de um novo autor
+### Cadastro de um novo categoria
 
-É necessário cadastrar um novo autor no sistema. Todo autor tem um nome, email e uma descrição. Também queremos saber o instante exato que ele foi registrado.
+É necessário cadastrar um novo categoria no sistema. Todo categoria tem um nome, email e uma descrição. Também queremos saber o instante exato que ele foi registrado.
 
 **Restrições**
 
@@ -32,7 +32,7 @@ Faça um fork desse [REPOSITÓRIO](https://github.com/asouza/seed-desafio-cdc) e
 - A descrição é obrigatória e não pode passar de 400 caracteres 
 
 **Resultado esperado**
-- Um novo autor criado e status 200 retornado
+- Um novo categoria criado e status 200 retornado
 
 **informações de suporte geral**
 
@@ -67,16 +67,16 @@ COMO ALBERTO FARIA ESSE CÓDIGO?
 - COMO EXTERNALIZAR AS MENSAGENS DE ERRO NO ARQUIVO DE CONFIGURAÇÃO.
 
 
-### Email do autor é único
+### Email do categoria é único
 **necessidades**    
-O email do autor precisa ser único no sistema
+O email do categoria precisa ser único no sistema
 
 **resultado esperado**    
 Erro de validação no caso de email duplicado
 
 **informações de suporte geral**    
 - TODO FRAMEWORK MVC MINIMAMENTE MADURO POSSUI UM MECANISMO PRONTO DE REALIZAR VALIDAÇÃO CUSTOMIZADA. SPRING, NESTJS E ASP.NET CORE MVC TÊM.
-- Aqui provavelmente você terá um if em algum lugar para verificar a existência de um outro autor. Todo código que tem uma branch de código(if,else) tem mais chance de executar de maneira equivocada. Tente criar um teste automatizado para aumentar ainda mais a confiabilidade do seu código. CRIAMOS TESTES AUTOMATIZADOS PARA QUE ELE NOS AJUDE A REVELAR E CONSERTAR BUGS NA APLICAÇÃO.​​ 
+- Aqui provavelmente você terá um if em algum lugar para verificar a existência de um outro categoria. Todo código que tem uma branch de código(if,else) tem mais chance de executar de maneira equivocada. Tente criar um teste automatizado para aumentar ainda mais a confiabilidade do seu código. CRIAMOS TESTES AUTOMATIZADOS PARA QUE ELE NOS AJUDE A REVELAR E CONSERTAR BUGS NA APLICAÇÃO.​​ 
 - COMO ALBERTO FARIA ESSE CÓDIGO?
 
 **informações de suporte para a combinação Java/Kotlin + Spring**    
@@ -85,6 +85,43 @@ Erro de validação no caso de email duplicado
 - Para realizar as validações padrões existe a Bean Validation
 - COMO CRIAR UM @RESTCONTROLLERADVICE PARA CUSTOMIZAR O JSON DE SAÍDA COM ERROS DE VALIDAÇÃO
 - COMO EXTERNALIZAR AS MENSAGENS DE ERRO NO ARQUIVO DE CONFIGURAÇÃO.
+
+
+### Cadastro de uma categoria
+**necessidades**:    
+- Toda categoria precisa de um nome
+
+**restrições**:    
+- O nome é obrigatório
+- O nome não pode ser duplicado
+
+**resultado esperado**:    
+- Uma nova categoria cadastrada no sistema e status 200 retorno
+- Caso alguma restrição não seja atendida, retorne 400 e um json informando os problemas de validação
+
+**sobre a utilização do material de suporte aqui**:    
+Esta é uma feature bem parecida com a de cadastro de categoria. Tente implementar inicialmente sem utilizar nenhum material de suporte. Caso sinta dificuldade vá utilizando de acordo com a necessidade. ​
+
+**informações de suporte geral**:    
+- CONTROLLERS 100% COESOS para lembrar você a nossa ideia de ter controllers que utilizam todos os atributos.
+- Como foi que você fez para receber os dados da requisição? Será que aproveitou a facilidade do framework e recebeu a sua entidade(objeto que faz parte do domínio) direto no método mapeado para um endereço? DÁ UMA OLHADA NESSE PILAR AQUI.
+- Dado que você separou os dados que chegam da request do objeto de domínio, como vai fazer para converter dessa entrada para o domínio? SUGIRO OLHAR UM POUCO SOBRE NOSSA IDEIA DE FORM VALUE OBJECTS.
+- Muitos dos problemas de uma aplicação vem do fato dela trabalhar com objetos em estado inválido. O ponto mais crítico em relação a isso é justamente quando os dados vêm de outra fonte, por exemplo um cliente externo. É por isso que temos o seguinte pilar: quanto mais externa é a borda mais proteção nós temos. Confira uma explicação sobre ele AQUI e depois AQUI
+- Nome é obrigatório. Como você lidou com isso? INFORMAÇÃO NATURAL E OBRIGATÓRIA ENTRA PELO CONSTRUTOR
+- Deixamos pistas que facilitem o uso do código onde não conseguimos resolver com compilação. Muitas vezes recebemos String, ints que possuem significados. O nome aqui é obrigatório, mas você não consegue garantir isso em tempo de compilação(caso esteja utilizando uma linguagem compilada). Se você não pode garantir a validação do formato em compilação, QUE TAL DEIXAR UMA DICA PARA A OUTRA PESSOA?
+- TODO FRAMEWORK MVC MINIMAMENTE MADURO POSSUI UM MECANISMO PRONTO DE REALIZAR VALIDAÇÃO CUSTOMIZADA. SPRING, NESTJS E ASP.NET CORE MVC TÊM.
+- Utilize um insomnia ou qualquer outra forma para verificar o endpoint
+- PEGUE CADA UMA DAS CLASSES QUE VOCÊ CRIOU E REALIZE A CONTAGEM DA CARGA INTRÍNSECA. Esse é o viés de design que estamos trabalhando. Precisamos nos habituar a fazer isso para que se torne algo automático na nossa vida.
+- COMO ALBERTO FARIA ESSE CÓDIGO?
+
+**informações de suporte para a combinação Java/Kotlin + Spring**:    
+- Para receber os dados da request como json, temos a annotation @RequestBody
+- Usamos a annotation @Valid para pedir que os dados da request sejam validados
+- Para realizar as validações padrões existe a Bean Validation
+- COMO CRIAR UM @RESTCONTROLLERADVICE PARA CUSTOMIZAR O JSON DE SAÍDA COM ERROS DE VALIDAÇÃO
+
+**sensações**:    
+Talvez aqui você tenha achado que o código foi até meio repetitivo. E a verdade é que foi mesmo. Talvez no próximo você ache que foi até meio robótico, vai ser melhor ainda. Quanto mais automático você sente que é para fazer algo quer dizer que mais dominado aquilo está. O que você precisa sempre se questionar é: Será que este padrão ​ainda pode melhorar?
 
 # Faça um fork desse repositório
 
