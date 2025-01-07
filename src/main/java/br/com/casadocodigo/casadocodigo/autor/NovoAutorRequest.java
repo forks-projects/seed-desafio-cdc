@@ -31,7 +31,15 @@ public class NovoAutorRequest {
         return new Autor(this.nome, this.email, this.descricao, this.dataHoraCriacao);
     }
 
+    public String getNome() {
+        return nome;
+    }
+
     public String getEmail() {
         return this.email;
+    }
+
+    public String getDescricao() {
+        return descricao;
     }
 }
