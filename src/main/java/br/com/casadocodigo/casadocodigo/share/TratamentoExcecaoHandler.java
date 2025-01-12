@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -13,6 +14,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 @RestControllerAdvice
 public class TratamentoExcecaoHandler {
@@ -38,14 +40,16 @@ public class TratamentoExcecaoHandler {
         );
     }
 
-    @ResponseStatus(code = HttpStatus.CONFLICT)
     @ExceptionHandler(ResponseStatusException.class)
-    public ResponseErroDTO tratarErroConflito(ResponseStatusException exception) {
-        return new ResponseErroDTO(
-                HttpStatus.CONFLICT.value(),
+    public ResponseEntity<ResponseErroDTO> tratarCustomizado(ResponseStatusException exception) {
+        ResponseErroDTO responseErroDTO = new ResponseErroDTO(
+                exception.getStatusCode().value(),
                 exception.getReason(),
                 new ArrayList<>()
         );
+        return ResponseEntity
+                    .status(exception.getStatusCode())
+                    .body(responseErroDTO);
     }
 
     @ExceptionHandler(Exception.class)
