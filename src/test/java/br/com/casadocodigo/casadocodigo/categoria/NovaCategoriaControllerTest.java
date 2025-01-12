@@ -44,7 +44,7 @@ class NovaCategoriaControllerTest {
     }
 
     @Test
-    @DisplayName("Deve retornar erro 409 quando a categoria já existir")
+    @DisplayName("Deve retornar erro 400 quando a categoria já existir")
     void deveRetornarErroSeCategoriaJaExistir() throws Exception {
         NovaCategoriaRequest novaCategoriaRequest = NovaCategoriaRequestDataBuilder
                 .umaCategoria().comNome("Drama").build();
@@ -55,7 +55,7 @@ class NovaCategoriaControllerTest {
         mockMvc.perform(post("/v1/categorias")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(novaCategoriaRequest)))
-                .andExpect(status().isConflict());
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -71,8 +71,8 @@ class NovaCategoriaControllerTest {
                         .header("Accept-Language", "pt-BR")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(novaCategoriaRequest)))
-                .andExpect(jsonPath("$.status").value(409))
-                .andExpect(jsonPath("$.erro").value("Categoria já está cadastrada"));
+                .andExpect(jsonPath("$.listaErros[0].campo").value("nome"))
+                .andExpect(jsonPath("$.listaErros[0].erro").value("Categoria já está cadastrada"));
     }
 
     @ParameterizedTest
