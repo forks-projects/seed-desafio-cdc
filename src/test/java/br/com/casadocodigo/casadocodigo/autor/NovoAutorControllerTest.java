@@ -32,11 +32,7 @@ class NovoAutorControllerTest {
     @Test
     @DisplayName("Deve cadastrar um autor com sucesso")
     void deveCadastrarAutorComSucesso() throws Exception {
-        NovoAutorRequest novoAutorRequest = new NovoAutorRequest(
-                "João Silva",
-                "joao.silva@example.com",
-                "Autor de ficção científica."
-        );
+        NovoAutorRequest novoAutorRequest = NovoAutorRequestDataBuilder.umAutor().build();
 
         mockMvc.perform(post("/v1/autores")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -50,11 +46,9 @@ class NovoAutorControllerTest {
         Autor autorExistente = new Autor("João Silva", "joao.silva@example.com", "Descrição existente.", LocalDateTime.now());
         autorRepository.save(autorExistente);
 
-        NovoAutorRequest novoAutorRequest = new NovoAutorRequest(
-                "João Oliveira Silva",
-                "joao.silva@example.com",
-                "Outra descrição."
-        );
+        NovoAutorRequest novoAutorRequest = NovoAutorRequestDataBuilder.umAutor()
+                .comEmail("joao.silva@example.com")
+                .build();
 
         mockMvc.perform(post("/v1/autores")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -65,11 +59,7 @@ class NovoAutorControllerTest {
     @Test
     @DisplayName("Deve retornar erro 400 ao tentar cadastrar um autor com nome vazio")
     void deveRetornarErroSeNomeForVazio() throws Exception {
-        NovoAutorRequest novoAutorRequest = new NovoAutorRequest(
-                "",
-                "maria.oliveira@example.com",
-                "Descrição válida."
-        );
+        NovoAutorRequest novoAutorRequest = NovoAutorRequestDataBuilder.umAutorComNomeVazio().build();
 
         mockMvc.perform(post("/v1/autores")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -80,11 +70,7 @@ class NovoAutorControllerTest {
     @Test
     @DisplayName("Deve retornar erro 400 ao tentar cadastrar um autor com e-mail inválido")
     void deveRetornarErroSeEmailForInvalido() throws Exception {
-        NovoAutorRequest novoAutorRequest = new NovoAutorRequest(
-                "Maria Oliveira",
-                "email-invalido",
-                "Descrição válida."
-        );
+        NovoAutorRequest novoAutorRequest = NovoAutorRequestDataBuilder.umAutorComEmailInvalido().build();
 
         mockMvc.perform(post("/v1/autores")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -95,11 +81,7 @@ class NovoAutorControllerTest {
     @Test
     @DisplayName("Deve retornar erro 400 ao tentar cadastrar um autor com e-mail em branco")
     void deveRetornarErroSeEmailEmBranco() throws Exception {
-        NovoAutorRequest novoAutorRequest = new NovoAutorRequest(
-                "Maria Oliveira",
-                "",
-                "Descrição válida."
-        );
+        NovoAutorRequest novoAutorRequest = NovoAutorRequestDataBuilder.umAutorComEmailEmBranco().build();
 
         mockMvc.perform(post("/v1/autores")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -112,11 +94,9 @@ class NovoAutorControllerTest {
     @DisplayName("Deve retornar erro 400 ao tentar cadastrar um autor com descrição maior que 400 caracteres")
     void deveRetornarErroSeDescricaoForMuitoLonga() throws Exception {
         String descricaoMuitoLonga = "a".repeat(401);
-        NovoAutorRequest novoAutorRequest = new NovoAutorRequest(
-                "Maria Oliveira",
-                "maria.oliveira@example.com",
-                descricaoMuitoLonga
-        );
+        NovoAutorRequest novoAutorRequest = NovoAutorRequestDataBuilder.umAutor()
+                .comDescricao(descricaoMuitoLonga)
+                .build();
 
         mockMvc.perform(post("/v1/autores")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -127,12 +107,7 @@ class NovoAutorControllerTest {
     @Test
     @DisplayName("Deve retornar erro 400 ao tentar cadastrar um autor com descrição em branco")
     void deveRetornarErroSeDescricaoEmBranco() throws Exception {
-        String descricaoEmBranco = "";
-        NovoAutorRequest novoAutorRequest = new NovoAutorRequest(
-                "Maria Oliveira",
-                "maria.oliveira@example.com",
-                descricaoEmBranco
-        );
+        NovoAutorRequest novoAutorRequest = NovoAutorRequestDataBuilder.umAutorComDescricaoEmBranco().build();
 
         mockMvc.perform(post("/v1/autores")
                         .contentType(MediaType.APPLICATION_JSON)
