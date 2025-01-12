@@ -4,11 +4,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+
+import java.util.stream.Stream;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -64,59 +68,45 @@ class NovaCategoriaControllerTest {
         categoriaRepository.save(categoriaExistente);
 
         mockMvc.perform(post("/v1/categorias")
-                .header("Accept-Language", "pt-BR")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(novaCategoriaRequest)))
+                        .header("Accept-Language", "pt-BR")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(novaCategoriaRequest)))
                 .andExpect(jsonPath("$.status").value(409))
                 .andExpect(jsonPath("$.erro").value("Categoria já está cadastrada"));
     }
 
-    @Test
-    @DisplayName("Deve retornar erro 400 quando o nome da categoria for em branco")
-    void deveRetornarErroSeNomeForEmBranco() throws Exception {
-        NovaCategoriaRequest novaCategoriaRequest = NovaCategoriaRequestDataBuilder.umaCategoriaComNomeEmBranco().build();
+    @ParameterizedTest
+    @MethodSource("provideInvalidasCategoriasRequest")
+    @DisplayName("Deve retornar erro e mensagem adequada para requisições inválidas")
+    void deveRetornarErroParaRequisicoesInvalidas(
+            NovaCategoriaRequest novaCategoriaRequest,
+            int expectedStatus,
+            String campo,
+            String mensagemErro) throws Exception {
 
         mockMvc.perform(post("/v1/categorias")
+                        .header("Accept-Language", "pt-BR")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(novaCategoriaRequest)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().is(expectedStatus))
+                .andExpect(jsonPath("$.listaErros[0].campo").value(campo))
+                .andExpect(jsonPath("$.listaErros[0].erro").value(mensagemErro));
     }
 
-    @Test
-    @DisplayName("Deve retornar mensagem de erro quando o nome for em branco")
-    void deveRetornarMensagemDeErroQuandoNomeForEmBranco() throws Exception {
-        NovaCategoriaRequest novaCategoriaRequest = NovaCategoriaRequestDataBuilder.umaCategoriaComNomeEmBranco().build();
-
-        mockMvc.perform(post("/v1/categorias")
-                .header("Accept-Language", "pt-BR")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(novaCategoriaRequest)))
-                .andExpect(jsonPath("$.listaErros[0].campo").value("nome"))
-                .andExpect(jsonPath("$.listaErros[0].erro").value("não deve estar em branco"));
-    }
-
-    @Test
-    @DisplayName("Deve retornar erro 400 quando o nome da categoria for nulo")
-    void deveRetornarErroSeNomeForNulo() throws Exception {
-        NovaCategoriaRequest novaCategoriaRequest = NovaCategoriaRequestDataBuilder.umaCategoriaComNomeNulo().build();
-
-        mockMvc.perform(post("/v1/categorias")
-                .header("Accept-Language", "pt-BR")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(novaCategoriaRequest)))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    @DisplayName("Deve retornar mensagem de erro quando o nome for nulo")
-    void deveRetornarMensagemDeErroQuandoNomeForNulo() throws Exception {
-        NovaCategoriaRequest novaCategoriaRequest = NovaCategoriaRequestDataBuilder.umaCategoriaComNomeNulo().build();
-
-        mockMvc.perform(post("/v1/categorias")
-                .header("Accept-Language", "pt-BR")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(novaCategoriaRequest)))
-                .andExpect(jsonPath("$.listaErros[0].campo").value("nome"))
-                .andExpect(jsonPath("$.listaErros[0].erro").value("não deve estar em branco"));
+    private static Stream<Object[]> provideInvalidasCategoriasRequest() {
+        return Stream.of(
+                new Object[]{
+                        NovaCategoriaRequestDataBuilder.umaCategoriaComNomeEmBranco().build(),
+                        400,
+                        "nome",
+                        "não deve estar em branco"
+                },
+                new Object[]{
+                        NovaCategoriaRequestDataBuilder.umaCategoriaComNomeNulo().build(),
+                        400,
+                        "nome",
+                        "não deve estar em branco"
+                }
+        );
     }
 }
