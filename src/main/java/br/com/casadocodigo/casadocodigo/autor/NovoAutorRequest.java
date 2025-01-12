@@ -1,5 +1,6 @@
 package br.com.casadocodigo.casadocodigo.autor;
 
+import br.com.casadocodigo.casadocodigo.share.ValorUnico;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import org.hibernate.validator.constraints.Length;
@@ -12,6 +13,7 @@ public class NovoAutorRequest {
 
     @NotBlank
     @Email
+    @ValorUnico(classeDaEntidade = Autor.class, nomeDoCampo = "email", message = "E-mail já está cadastrado")
     private String email;
 
     @NotBlank

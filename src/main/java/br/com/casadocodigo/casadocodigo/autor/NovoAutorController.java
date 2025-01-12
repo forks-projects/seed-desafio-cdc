@@ -24,9 +24,6 @@ public class NovoAutorController {
     @PostMapping("/v1/autores")
     @Transactional
     public ResponseEntity<?> cadastrar(@Valid @RequestBody NovoAutorRequest novoAutorRequest, UriComponentsBuilder uriBuilder) {
-        autorRepository.findByEmail(novoAutorRequest.getEmail()).ifPresent(autor -> {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "O e-mail já está em uso.");
-        });
         Autor autor = novoAutorRequest.toModel();
         autorRepository.save(autor);
         URI uri = uriBuilder.path("/v1/autores/{id}").buildAndExpand(autor.getId()).toUri();
