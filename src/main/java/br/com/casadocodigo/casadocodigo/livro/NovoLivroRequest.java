@@ -4,6 +4,7 @@ import br.com.casadocodigo.casadocodigo.autor.Autor;
 import br.com.casadocodigo.casadocodigo.autor.AutorRepository;
 import br.com.casadocodigo.casadocodigo.categoria.Categoria;
 import br.com.casadocodigo.casadocodigo.categoria.CategoriaRepository;
+import br.com.casadocodigo.casadocodigo.share.ExisteId;
 import br.com.casadocodigo.casadocodigo.share.ValorUnico;
 import jakarta.persistence.Lob;
 import jakarta.validation.constraints.Future;
@@ -46,9 +47,11 @@ public class NovoLivroRequest {
     private LocalDate dataPublicacao;
 
     @NotNull
+    @ExisteId(classeDaEntidade = Categoria.class, nomeDoCampo = "id", message = "Categoria não encontrada")
     private Long idCategoria;
 
     @NotNull
+    @ExisteId(classeDaEntidade = Autor.class, nomeDoCampo = "id", message = "Autor não encontrado")
     private Long idAutor;
 
     public NovoLivroRequest(@NotBlank String titulo,
@@ -109,10 +112,10 @@ public class NovoLivroRequest {
 
     public Livro toModel(@NotNull CategoriaRepository categoriaRepository, @NotNull AutorRepository autorRepository) {
         Categoria categoria = categoriaRepository.findById(idCategoria).orElseThrow(
-                ()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Categoria não encontrada")
+                ()-> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Categoria não encontrada")
         );
         Autor autor = autorRepository.findById(idAutor).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Autor não encontrado")
+                () -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Autor não encontrado")
         );
         return new Livro(
                 titulo,

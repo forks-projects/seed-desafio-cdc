@@ -47,10 +47,8 @@ class NovoLivroControllerTest {
     @Test
     @DisplayName("Deve cadastrar livro com sucesso")
     void deveCadastrarLivroComSucesso() throws Exception {
-        Categoria categoria = categoriaRepository.save(new Categoria("categoria 1"));
-        categoriaRepository.save(categoria);
-        Autor autor = new Autor("João Silva", "joao.silva@example.com", "Descrição existente.", LocalDateTime.now());
-        autorRepository.save(autor);
+        Categoria categoria = criarCategoria();
+        Autor autor = criarAutor();
 
         NovoLivroRequest novoLivroRequest = new NovoLivroRequest(
                 "Título do Livro",
@@ -94,6 +92,9 @@ class NovoLivroControllerTest {
     @Test
     @DisplayName("Deve mostrar erro quando titulo em branco")
     void deveMostrarErroQuandoTituloEmBranco() throws Exception {
+        Categoria categoria = criarCategoria();
+        Autor autor = criarAutor();
+
         NovoLivroRequest novoLivroRequest = new NovoLivroRequest(
                 "",
                 "Resumo do livro com menos de 500 caracteres.",
@@ -102,8 +103,8 @@ class NovoLivroControllerTest {
                 100,
                 "123-456-789",
                 LocalDate.now().plusDays(1),
-                1L,
-                1L
+                categoria.getId(),
+                autor.getId()
         );
 
         mockMvc.perform(post("/v1/livros")
@@ -117,10 +118,8 @@ class NovoLivroControllerTest {
     @Test
     @DisplayName("Deve retornar erro 400 quando título já cadastrado")
     void deveRetornarErro400QuandoTituloJaCadastrado() throws Exception {
-        Categoria categoria = categoriaRepository.save(new Categoria("categoria 1"));
-        categoriaRepository.save(categoria);
-        Autor autor = new Autor("João Silva", "joao.silva@example.com", "Descrição existente.", LocalDateTime.now());
-        autorRepository.save(autor);
+        Categoria categoria = criarCategoria();
+        Autor autor = criarAutor();
         Livro livro = new Livro("Título do Livro", "resumo", "sumário do livro", new BigDecimal("20"), 100, "123-456-789", LocalDate.now().plusDays(1), categoria, autor);
         livroRepository.save(livro);
 
@@ -145,12 +144,9 @@ class NovoLivroControllerTest {
     @Test
     @DisplayName("Deve mostrar erro titulo cadastrado quando título já está cadastrado")
     void deveMostrarErroTituloCadastradoQuandoTituloJaEstaCadastrado() throws Exception {
-        Categoria categoria = categoriaRepository.save(new Categoria("categoria 1"));
-        categoriaRepository.save(categoria);
-        Autor autor = new Autor("João Silva", "joao.silva@example.com", "Descrição existente.", LocalDateTime.now());
-        autorRepository.save(autor);
-        Livro livro = new Livro("Título do Livro", "resumo", "sumário do livro", new BigDecimal("20"), 100, "123-456-789", LocalDate.now().plusDays(1), categoria, autor);
-        livroRepository.save(livro);
+        Categoria categoria = criarCategoria();
+        Autor autor = criarAutor();
+        criarLivro(categoria, autor);
 
         NovoLivroRequest novoLivroRequest = new NovoLivroRequest(
                 "Título do Livro",
@@ -195,6 +191,9 @@ class NovoLivroControllerTest {
     @Test
     @DisplayName("Deve mostrar erro quando resumo em branco")
     void deveMostrarErroQuandoResumoEmBranco() throws Exception {
+        Categoria categoria = criarCategoria();
+        Autor autor = criarAutor();
+
         NovoLivroRequest novoLivroRequest = new NovoLivroRequest(
                 "Título do Livro",
                 "",
@@ -203,8 +202,8 @@ class NovoLivroControllerTest {
                 100,
                 "123-456-789",
                 LocalDate.now().plusDays(1),
-                1L,
-                1L
+                categoria.getId(),
+                autor.getId()
         );
 
         mockMvc.perform(post("/v1/livros")
@@ -239,6 +238,9 @@ class NovoLivroControllerTest {
     @Test
     @DisplayName("Deve mostrar erro quando resumo com mais de 500 caracteres")
     void deveMostrarErroQuandoResumoComMais500Caracteres() throws Exception {
+        Categoria categoria = criarCategoria();
+        Autor autor = criarAutor();
+
         NovoLivroRequest novoLivroRequest = new NovoLivroRequest(
                 "Título do Livro",
                 "a".repeat(501),
@@ -247,8 +249,8 @@ class NovoLivroControllerTest {
                 100,
                 "123-456-789",
                 LocalDate.now().plusDays(1),
-                1L,
-                1L
+                categoria.getId(),
+                autor.getId()
         );
 
         mockMvc.perform(post("/v1/livros")
@@ -284,6 +286,9 @@ class NovoLivroControllerTest {
     @Test
     @DisplayName("Deve mostrar erro quando preço é nulo")
     void deveMostrarErroQuandoPrecoNulo() throws Exception {
+        Categoria categoria = criarCategoria();
+        Autor autor = criarAutor();
+
         NovoLivroRequest novoLivroRequest = new NovoLivroRequest(
                 "Título do Livro",
                 "Resumo do livro com menos de 500 caracteres.",
@@ -292,8 +297,8 @@ class NovoLivroControllerTest {
                 100,
                 "123-456-789",
                 LocalDate.now().plusDays(1),
-                1L,
-                1L
+                categoria.getId(),
+                autor.getId()
         );
 
         mockMvc.perform(post("/v1/livros")
@@ -329,6 +334,9 @@ class NovoLivroControllerTest {
     @Test
     @DisplayName("Deve mostrar erro quando preço menor que 20")
     void deveMostrarErroQuandoPrecoMenor20() throws Exception {
+        Categoria categoria = criarCategoria();
+        Autor autor = criarAutor();
+
         NovoLivroRequest novoLivroRequest = new NovoLivroRequest(
                 "Título do Livro",
                 "Resumo do livro com menos de 500 caracteres.",
@@ -337,8 +345,8 @@ class NovoLivroControllerTest {
                 100,
                 "123-456-789",
                 LocalDate.now().plusDays(1),
-                1L,
-                1L
+                categoria.getId(),
+                autor.getId()
         );
 
         mockMvc.perform(post("/v1/livros")
@@ -374,6 +382,9 @@ class NovoLivroControllerTest {
     @Test
     @DisplayName("Deve mostrar erro quando número página maior ou igual a que 100")
     void deveMostrarErroQuandoNumeroPaginaMaiorOuIgualA100() throws Exception {
+        Categoria categoria = criarCategoria();
+        Autor autor = criarAutor();
+
         NovoLivroRequest novoLivroRequest = new NovoLivroRequest(
                 "Título do Livro",
                 "Resumo do livro com menos de 500 caracteres.",
@@ -382,8 +393,8 @@ class NovoLivroControllerTest {
                 99,
                 "123-456-789",
                 LocalDate.now().plusDays(1),
-                1L,
-                1L
+                categoria.getId(),
+                autor.getId()
         );
 
         mockMvc.perform(post("/v1/livros")
@@ -419,6 +430,9 @@ class NovoLivroControllerTest {
     @Test
     @DisplayName("Deve mostrar erro quando nisbn em branco")
     void deveMostrarErroQuandoIsbnEmBranco() throws Exception {
+        Categoria categoria = criarCategoria();
+        Autor autor = criarAutor();
+
         NovoLivroRequest novoLivroRequest = new NovoLivroRequest(
                 "Título do Livro",
                 "Resumo do livro com menos de 500 caracteres.",
@@ -427,8 +441,8 @@ class NovoLivroControllerTest {
                 100,
                 "",
                 LocalDate.now().plusDays(1),
-                1L,
-                1L
+                categoria.getId(),
+                autor.getId()
         );
 
         mockMvc.perform(post("/v1/livros")
@@ -442,12 +456,9 @@ class NovoLivroControllerTest {
     @Test
     @DisplayName("Deve retornar erro 400 quando isbn já está cadastrado")
     void deveRetornarErro400QuandoIsbnDeveSerUnico() throws Exception {
-        Categoria categoria = categoriaRepository.save(new Categoria("categoria 1"));
-        categoriaRepository.save(categoria);
-        Autor autor = new Autor("João Silva", "joao.silva@example.com", "Descrição existente.", LocalDateTime.now());
-        autorRepository.save(autor);
-        Livro livro = new Livro("Título do Livro", "resumo", "sumário do livro", new BigDecimal("20"), 100, "123-456-789", LocalDate.now().plusDays(1), categoria, autor);
-        livroRepository.save(livro);
+        Categoria categoria = criarCategoria();
+        Autor autor = criarAutor();
+        Livro livro = criarLivro(categoria, autor);
 
         NovoLivroRequest novoLivroRequest = new NovoLivroRequest(
                 "Título do Livro novo",
@@ -468,13 +479,16 @@ class NovoLivroControllerTest {
                 .andExpect(status().isBadRequest());
     }
 
+    private Livro criarLivro(Categoria categoria, Autor autor) {
+        Livro livro = new Livro("Título do Livro", "resumo", "sumário do livro", new BigDecimal("20"), 100, "123-456-789", LocalDate.now().plusDays(1), categoria, autor);
+        return livroRepository.save(livro);
+    }
+
     @Test
     @DisplayName("Deve mostrar erro quando isbn já está cadastrado")
     void deveMostrarErroQuandoIsbnJaEstaCadastrado() throws Exception {
-        Categoria categoria = categoriaRepository.save(new Categoria("categoria 1"));
-        categoriaRepository.save(categoria);
-        Autor autor = new Autor("João Silva", "joao.silva@example.com", "Descrição existente.", LocalDateTime.now());
-        autorRepository.save(autor);
+        Categoria categoria = criarCategoria();
+        Autor autor = criarAutor();
         Livro livro = new Livro("Título do Livro", "resumo", "sumário do livro", new BigDecimal("20"), 100, "123-456-789", LocalDate.now().plusDays(1), categoria, autor);
         livroRepository.save(livro);
 
@@ -523,6 +537,9 @@ class NovoLivroControllerTest {
     @Test
     @DisplayName("Deve mostrar erro quando dataPublicacao está nula")
     void deveMostrarErroQuandoDataPublicacaoNula() throws Exception {
+        Categoria categoria = criarCategoria();
+        Autor autor = criarAutor();
+
         NovoLivroRequest novoLivroRequest = new NovoLivroRequest(
                 "Livro Teste",
                 "Resumo Teste",
@@ -531,8 +548,8 @@ class NovoLivroControllerTest {
                 150,
                 "123-123-123",
                 null,
-                1L,
-                1L
+                categoria.getId(),
+                autor.getId()
         );
 
         mockMvc.perform(post("/v1/livros")
@@ -568,6 +585,9 @@ class NovoLivroControllerTest {
     @Test
     @DisplayName("Deve mostrar erro quando dataPublicacao está no passado")
     void deveMostrarErroQuandoDataPublicacaoNoPassado() throws Exception {
+        Categoria categoria = criarCategoria();
+        Autor autor = criarAutor();
+
         NovoLivroRequest novoLivroRequest = new NovoLivroRequest(
                 "Livro Teste",
                 "Resumo Teste",
@@ -576,8 +596,8 @@ class NovoLivroControllerTest {
                 150,
                 "123-123-123",
                 LocalDate.now().minusDays(1),
-                1L,
-                1L
+                categoria.getId(),
+                autor.getId()
         );
 
         mockMvc.perform(post("/v1/livros")
@@ -613,6 +633,8 @@ class NovoLivroControllerTest {
     @Test
     @DisplayName("Deve mostrar erro quando categoria está nula")
     void deveMostrarErroQuandoCategoriaNula() throws Exception {
+        Autor autor = criarAutor();
+
         NovoLivroRequest novoLivroRequest = new NovoLivroRequest(
                 "Livro Teste",
                 "Resumo Teste",
@@ -622,7 +644,7 @@ class NovoLivroControllerTest {
                 "123-123-123",
                 LocalDate.now().plusDays(1L),
                 null,
-                1L
+                autor.getId()
         );
 
         mockMvc.perform(post("/v1/livros")
@@ -634,8 +656,8 @@ class NovoLivroControllerTest {
     }
 
     @Test
-    @DisplayName("Deve retornar erro 404 quando categoria não encontrada")
-    void deveRetornarErro404QuandoCategoriaNaoEncontrada() throws Exception {
+    @DisplayName("Deve retornar erro 400 quando categoria não encontrada")
+    void deveRetornarErro400QuandoCategoriaNaoEncontrada() throws Exception {
         NovoLivroRequest novoLivroRequest = new NovoLivroRequest(
                 "Livro Teste",
                 "Resumo Teste",
@@ -652,12 +674,14 @@ class NovoLivroControllerTest {
                 .header("Accept-Language", "pt-BR")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(novoLivroRequest)))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isBadRequest());
     }
 
     @Test
     @DisplayName("Deve mostrar erro quando categoria não encontrada")
     void deveMostrarErroQuandoCategoriaNaoEncontrada() throws Exception {
+        Autor autor = criarAutor();
+
         NovoLivroRequest novoLivroRequest = new NovoLivroRequest(
                 "Livro Teste",
                 "Resumo Teste",
@@ -667,14 +691,15 @@ class NovoLivroControllerTest {
                 "123-123-123",
                 LocalDate.now().plusDays(1L),
                 99L,
-                1L
+                autor.getId()
         );
 
         mockMvc.perform(post("/v1/livros")
                 .header("Accept-Language", "pt-BR")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(novoLivroRequest)))
-                .andExpect(jsonPath("$.erro").value("Categoria não encontrada"));
+                .andExpect(jsonPath("$.listaErros[0].campo").value("idCategoria"))
+                .andExpect(jsonPath("$.listaErros[0].erro").value("Categoria não encontrada"));
     }
 
     @Test
@@ -702,6 +727,8 @@ class NovoLivroControllerTest {
     @Test
     @DisplayName("Deve mostrar erro quando autor nulo")
     void deveMostrarErroQuandoAutorNUlo() throws Exception {
+        Categoria categoria = criarCategoria();
+
         NovoLivroRequest novoLivroRequest = new NovoLivroRequest(
                 "Livro Teste",
                 "Resumo Teste",
@@ -710,7 +737,7 @@ class NovoLivroControllerTest {
                 150,
                 "123-123-123",
                 LocalDate.now().plusDays(1L),
-                1L,
+                categoria.getId(),
                 null
         );
 
@@ -723,10 +750,9 @@ class NovoLivroControllerTest {
     }
 
     @Test
-    @DisplayName("Deve retornar erro 404 quando autor não encontrado")
-    void deveRetornarErro404QuandoAutorNaoEncontrado() throws Exception {
-        Categoria categoria = categoriaRepository.save(new Categoria("categoria 1"));
-        categoriaRepository.save(categoria);
+    @DisplayName("Deve retornar erro 400 quando autor não encontrado")
+    void deveRetornarErro400QuandoAutorNaoEncontrado() throws Exception {
+        Categoria categoria = criarCategoria();
 
         NovoLivroRequest novoLivroRequest = new NovoLivroRequest(
                 "Livro Teste",
@@ -744,14 +770,13 @@ class NovoLivroControllerTest {
                 .header("Accept-Language", "pt-BR")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(novoLivroRequest)))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isBadRequest());
     }
 
     @Test
     @DisplayName("Deve mostrar erro quando autor não encontrado")
     void deveMostrarErroQuandoAutorNaoEncontrado() throws Exception {
-        Categoria categoria = categoriaRepository.save(new Categoria("categoria 1"));
-        categoriaRepository.save(categoria);
+        Categoria categoria = criarCategoria();
 
         NovoLivroRequest novoLivroRequest = new NovoLivroRequest(
                 "Livro Teste",
@@ -769,6 +794,19 @@ class NovoLivroControllerTest {
                 .header("Accept-Language", "pt-BR")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(novoLivroRequest)))
-                .andExpect(jsonPath("$.erro").value("Autor não encontrado"));
+                .andExpect(jsonPath("$.listaErros[0].campo").value("idAutor"))
+                .andExpect(jsonPath("$.listaErros[0].erro").value("Autor não encontrado"));
+    }
+
+    private Categoria criarCategoria() {
+        return categoriaRepository.save(new Categoria("categoria 1"));
+    }
+
+    private Autor criarAutor() {
+        Autor autor = new Autor("João Silva",
+                "joao.silva@example.com",
+                "Descrição existente.",
+                LocalDateTime.now());
+        return autorRepository.save(autor);
     }
 }
