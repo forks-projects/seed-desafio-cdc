@@ -3,6 +3,7 @@ package br.com.casadocodigo.casadocodigo.livro;
 import br.com.casadocodigo.casadocodigo.autor.Autor;
 import br.com.casadocodigo.casadocodigo.categoria.Categoria;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -53,11 +54,11 @@ public class Livro {
     private LocalDate dataPublicacao;
 
     @NotNull
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Categoria categoria;
 
     @NotNull
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Autor autor;
 
     @Deprecated
@@ -85,5 +86,9 @@ public class Livro {
 
     public Long getId() {
         return id;
+    }
+
+    public String getTitulo() {
+        return titulo;
     }
 }
