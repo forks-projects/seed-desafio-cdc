@@ -18,9 +18,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
-
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
@@ -48,6 +45,37 @@ class LivroEspecificoControllerTest {
 
     @Autowired
     private CategoriaRepository categoriaRepository;
+
+    private Livro livro;
+
+    @Test
+    @DisplayName("Deve retornar os detalhes de um livro existente")
+    void deveRetornarDetalhesDeLivroExistente() throws Exception {
+        criarLivro();
+
+        mockMvc.perform(get("/v1/livros/"+livro.getId().toString())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.titulo", is(livro.getTitulo())))
+                .andExpect(jsonPath("$.resumo", is(livro.getResumo())))
+                .andExpect(jsonPath("$.sumario", is(livro.getSumario())))
+                .andExpect(jsonPath("$.preco", is(livro.getPreco().doubleValue())))
+                .andExpect(jsonPath("$.numeroPaginas", is(livro.getNumeroPaginas())))
+                .andExpect(jsonPath("$.isbn", is(livro.getIsbn())))
+                .andExpect(jsonPath("$.autor.nome", is(livro.getAutor().getNome())))
+                .andExpect(jsonPath("$.autor.descricao", is(livro.getAutor().getDescricao())))
+                .andExpect(jsonPath("$.categoria.nome", is(livro.getCategoria().getNome())));
+    }
+
+    @Test
+    @DisplayName("Deve retornar 404 quando o livro não for encontrado")
+    void deveRetornar404SeLivroNaoForEncontrado() throws Exception {
+        mockMvc.perform(get("/v1/livros/2")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.status", is(404)))
+                .andExpect(jsonPath("$.erro", is("Livro não encontrado")));
+    }
 
     @Test
     @DisplayName("Deve retornar uma página de livros com sucesso")
@@ -84,35 +112,39 @@ class LivroEspecificoControllerTest {
                 .andExpect(jsonPath("$.page.totalPages").value(0));
     }
 
+    public void criarLivro() {
+        Autor autor = NovoAutorRequestDataBuilder.umAutor().build().toModel();
+        autorRepository.save(autor);
+        Categoria categoria = NovaCategoriaRequestDataBuilder.umaCategoria().build().toModel();
+        categoriaRepository.save(categoria);
+        Livro livro = NovoLivroRequestDataBuilder.umLivro()
+                .comIdAutor(autor.getId())
+                .comIdCategoria(categoria.getId())
+                .build()
+                .toModel(categoriaRepository, autorRepository);
+        this.livro = livroRepository.save(livro);
+    }
+
     public void criarLivros() {
         Autor autor = NovoAutorRequestDataBuilder.umAutor().build().toModel();
         autorRepository.save(autor);
         Categoria categoria = NovaCategoriaRequestDataBuilder.umaCategoria().build().toModel();
         categoriaRepository.save(categoria);
-        Livro livro1 = new NovoLivroRequest(
-                "Título do Livro 1",
-                "Resumo do livro com menos de 500 caracteres.",
-                "Sumário do livro",
-                new BigDecimal("25.50"),
-                100,
-                "123-456-789",
-                LocalDate.now().plusDays(1),
-                categoria.getId(),
-                autor.getId()
-        ).toModel(categoriaRepository, autorRepository);
+        Livro livro1 = NovoLivroRequestDataBuilder.umLivro()
+                .comTitulo("Título do Livro 1")
+                .comIdCategoria(categoria.getId())
+                .comIdAutor(autor.getId())
+                .build()
+                .toModel(categoriaRepository, autorRepository);
         livroRepository.save(livro1);
 
-        Livro livro2 = new NovoLivroRequest(
-                "Título do Livro 2",
-                "Resumo do livro com menos de 500 caracteres.",
-                "Sumário do livro",
-                new BigDecimal("25.50"),
-                100,
-                "012-345-678",
-                LocalDate.now().plusDays(1),
-                categoria.getId(),
-                autor.getId()
-        ).toModel(categoriaRepository, autorRepository);
+        Livro livro2 = NovoLivroRequestDataBuilder.umLivro()
+                .comTitulo("Título do Livro 2")
+                .comIsbn("012-345-678")
+                .comIdCategoria(categoria.getId())
+                .comIdAutor(autor.getId())
+                .build()
+                .toModel(categoriaRepository, autorRepository);
         livroRepository.save(livro2);
     }
 
