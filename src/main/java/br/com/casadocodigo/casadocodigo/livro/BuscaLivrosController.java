@@ -10,10 +10,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 @RestController
-public class LivroEspecificoController {
+public class BuscaLivrosController {
     private final LivroRepository livroRepository;
 
-    public LivroEspecificoController(LivroRepository livroRepository) {
+    public BuscaLivrosController(LivroRepository livroRepository) {
         this.livroRepository = livroRepository;
     }
 
