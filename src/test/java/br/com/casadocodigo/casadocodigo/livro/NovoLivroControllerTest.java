@@ -489,7 +489,15 @@ class NovoLivroControllerTest {
     void deveMostrarErroQuandoIsbnJaEstaCadastrado() throws Exception {
         Categoria categoria = criarCategoria();
         Autor autor = criarAutor();
-        Livro livro = new Livro("Título do Livro", "resumo", "sumário do livro", new BigDecimal("20"), 100, "123-456-789", LocalDate.now().plusDays(1), categoria, autor);
+        Livro livro = new Livro("Título do Livro",
+                "resumo",
+                "sumário do livro",
+                new BigDecimal("20"),
+                100,
+                "123-456-789",
+                LocalDate.now().plusDays(1),
+                categoria,
+                autor);
         livroRepository.save(livro);
 
         NovoLivroRequest novoLivroRequest = new NovoLivroRequest(
@@ -500,8 +508,8 @@ class NovoLivroControllerTest {
                 100,
                 "123-456-789",
                 LocalDate.now().plusDays(1),
-                autor.getId(),
-                categoria.getId()
+                categoria.getId(),
+                autor.getId()
         );
 
         mockMvc.perform(post("/v1/livros")
