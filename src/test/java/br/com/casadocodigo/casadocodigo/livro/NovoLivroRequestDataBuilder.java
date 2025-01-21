@@ -1,5 +1,8 @@
 package br.com.casadocodigo.casadocodigo.livro;
 
+import br.com.casadocodigo.casadocodigo.autor.Autor;
+import br.com.casadocodigo.casadocodigo.categoria.Categoria;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
@@ -20,6 +23,25 @@ public class NovoLivroRequestDataBuilder {
 
     public static NovoLivroRequestDataBuilder umLivro() {
         return new NovoLivroRequestDataBuilder();
+    }
+
+    public static NovoLivroRequestDataBuilder umLivroSemTitulo(Categoria categoria, Autor autor) {
+        return new NovoLivroRequestDataBuilder().comTitulo("")
+                .comIdCategoria(categoria.getId())
+                .comIdAutor(autor.getId());
+    }
+
+    public static NovoLivroRequestDataBuilder umLivroCustomizado(Categoria categoria, Autor autor) {
+        return new NovoLivroRequestDataBuilder()
+                .comIdCategoria(categoria.getId())
+                .comIdAutor(autor.getId());
+    }
+
+    public static NovoLivroRequestDataBuilder umLivroComResumoComMaisDe500Caracteres(Categoria categoria, Autor autor) {
+        return new NovoLivroRequestDataBuilder()
+                .comResumo("a".repeat(501))
+                .comIdCategoria(categoria.getId())
+                .comIdAutor(autor.getId());
     }
 
     public NovoLivroRequestDataBuilder comTitulo(String titulo) {
