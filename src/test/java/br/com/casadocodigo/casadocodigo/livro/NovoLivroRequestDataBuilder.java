@@ -31,6 +31,10 @@ public class NovoLivroRequestDataBuilder {
                 .comIdAutor(autor.getId());
     }
 
+    public static NovoLivroRequestDataBuilder umLivroSemTituloCategoriaAutor() {
+        return new NovoLivroRequestDataBuilder().comTitulo("");
+    }
+
     public static NovoLivroRequestDataBuilder umLivroCustomizado(Categoria categoria, Autor autor) {
         return new NovoLivroRequestDataBuilder()
                 .comIdCategoria(categoria.getId())

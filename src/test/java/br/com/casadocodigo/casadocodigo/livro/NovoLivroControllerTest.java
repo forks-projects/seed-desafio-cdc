@@ -10,6 +10,9 @@ import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -19,6 +22,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.stream.Stream;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -70,11 +74,13 @@ class NovoLivroControllerTest {
                 .andExpect(status().isCreated());
     }
 
-    @Test
-    @DisplayName("Deve retornar erro 400 quando titulo em branco")
-    void deveRetornarErro400QuandoTituloEmBranco() throws Exception {
-        NovoLivroRequest novoLivroRequest = NovoLivroRequestDataBuilder
-                .umLivroSemTitulo(categoria, autor)
+    @ParameterizedTest(name = "[{index}] {2}")
+    @MethodSource("fornecerDadosParaErrosHttpStatus")
+    @DisplayName("Deve retornar erro 400 quando cadastrar livro com dados invalidos")
+    void deveRetornarErro400QuandoTituloEmBranco(NovoLivroRequestDataBuilder novoLivroRequestDataBuilder, int statusEsperado, String descricaoErro) throws Exception {
+        NovoLivroRequest novoLivroRequest = novoLivroRequestDataBuilder
+                .comIdAutor(categoria.getId())
+                .comIdAutor(autor.getId())
                 .build();
 
         mockMvc.perform(post("/v1/livros")
@@ -83,20 +89,21 @@ class NovoLivroControllerTest {
                 .andExpect(status().isBadRequest());
     }
 
-    @Test
-    @DisplayName("Deve mostrar erro quando titulo em branco")
-    void deveMostrarErroQuandoTituloEmBranco() throws Exception {
-
-        NovoLivroRequest novoLivroRequest = NovoLivroRequestDataBuilder
-                .umLivroSemTitulo(categoria, autor)
+    @ParameterizedTest(name = "[{index}] {3}")
+    @MethodSource("fornecerDadosParaMensagensErro")
+    @DisplayName("Deve mostrar mensagem com a descrição do erro")
+    void deveMostrarMensagemComDescricaoDoErro(NovoLivroRequestDataBuilder novoLivroRequestDataBuilder, String campo, String mensagemErro, String descricaoErro) throws Exception {
+        NovoLivroRequest novoLivroRequest = novoLivroRequestDataBuilder
+                .comIdCategoria(categoria.getId())
+                .comIdAutor(autor.getId())
                 .build();
 
         mockMvc.perform(post("/v1/livros")
                 .header("Accept-Language", "pt-BR")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(novoLivroRequest)))
-                .andExpect(jsonPath("$.listaErros[0].campo").value("titulo"))
-                .andExpect(jsonPath("$.listaErros[0].erro").value("não deve estar em branco"));
+                .andExpect(jsonPath("$.listaErros[0].campo").value(campo))
+                .andExpect(jsonPath("$.listaErros[0].erro").value(mensagemErro));
     }
 
     @Test
@@ -128,186 +135,6 @@ class NovoLivroControllerTest {
                 .content(objectMapper.writeValueAsString(novoLivroRequest)))
                 .andExpect(jsonPath("$.listaErros[0].campo").value("titulo"))
                 .andExpect(jsonPath("$.listaErros[0].erro").value("já está cadastrado"));
-    }
-
-    @Test
-    @DisplayName("Deve retornar erro 400 quando resumo em branco")
-    void deveRetornarErro400QuandoResumoEmBranco() throws Exception {
-        NovoLivroRequest novoLivroRequest = NovoLivroRequestDataBuilder.umLivroCustomizado(categoria, autor)
-                .comResumo("")
-                .build();
-
-        mockMvc.perform(post("/v1/livros")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(novoLivroRequest)))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    @DisplayName("Deve mostrar erro quando resumo em branco")
-    void deveMostrarErroQuandoResumoEmBranco() throws Exception {
-        NovoLivroRequest novoLivroRequest = NovoLivroRequestDataBuilder.umLivroCustomizado(categoria, autor)
-                .comResumo("")
-                .build();
-
-        mockMvc.perform(post("/v1/livros")
-                .header("Accept-Language", "pt-BR")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(novoLivroRequest)))
-                .andExpect(jsonPath("$.listaErros[0].campo").value("resumo"))
-                .andExpect(jsonPath("$.listaErros[0].erro").value("não deve estar em branco"));
-    }
-
-    @Test
-    @DisplayName("Deve retornar erro 400 quando resumo com mais de 500 caracteres")
-    void deveRetornarErro400QuandoResumoComMaisDe500Caracteres() throws Exception {
-        NovoLivroRequest novoLivroRequest = NovoLivroRequestDataBuilder
-                .umLivroComResumoComMaisDe500Caracteres(categoria, autor)
-                .build();
-
-        mockMvc.perform(post("/v1/livros")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(novoLivroRequest)))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    @DisplayName("Deve mostrar erro quando resumo com mais de 500 caracteres")
-    void deveMostrarErroQuandoResumoComMais500Caracteres() throws Exception {
-        NovoLivroRequest novoLivroRequest = NovoLivroRequestDataBuilder
-                .umLivroComResumoComMaisDe500Caracteres(categoria, autor)
-                .build();
-
-        mockMvc.perform(post("/v1/livros")
-                .header("Accept-Language", "pt-BR")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(novoLivroRequest)))
-                .andExpect(jsonPath("$.listaErros[0].campo").value("resumo"))
-                .andExpect(jsonPath("$.listaErros[0].erro").value("o comprimento deve ser entre 0 e 500"));
-    }
-
-    @Test
-    @DisplayName("Deve retornar erro 400 quando preço nulo")
-    void deveRetornarErro400QuandoPrecoNulo() throws Exception {
-        NovoLivroRequest novoLivroRequest = NovoLivroRequestDataBuilder
-                .umLivroCustomizado(categoria, autor)
-                .comPreco(null)
-                .build();
-
-        mockMvc.perform(post("/v1/livros")
-                .header("Accept-Language", "pt-BR")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(novoLivroRequest)))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    @DisplayName("Deve mostrar erro quando preço é nulo")
-    void deveMostrarErroQuandoPrecoNulo() throws Exception {
-        NovoLivroRequest novoLivroRequest = NovoLivroRequestDataBuilder
-                .umLivroCustomizado(categoria, autor)
-                .comPreco(null)
-                .build();
-
-        mockMvc.perform(post("/v1/livros")
-                .header("Accept-Language", "pt-BR")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(novoLivroRequest)))
-                .andExpect(jsonPath("$.listaErros[0].campo").value("preco"))
-                .andExpect(jsonPath("$.listaErros[0].erro").value("não deve ser nulo"));
-    }
-
-    @Test
-    @DisplayName("Deve retornar erro 400 quando preço menor que 20")
-    void deveRetornarErro400QuandoPrecoMenor20() throws Exception {
-        NovoLivroRequest novoLivroRequest = NovoLivroRequestDataBuilder
-                .umLivroCustomizado(categoria, autor)
-                .comPreco(BigDecimal.TEN)
-                .build();
-
-        mockMvc.perform(post("/v1/livros")
-                .header("Accept-Language", "pt-BR")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(novoLivroRequest)))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    @DisplayName("Deve mostrar erro quando preço menor que 20")
-    void deveMostrarErroQuandoPrecoMenor20() throws Exception {
-        NovoLivroRequest novoLivroRequest = NovoLivroRequestDataBuilder
-                .umLivroCustomizado(categoria, autor)
-                .comPreco(BigDecimal.TEN)
-                .build();
-
-        mockMvc.perform(post("/v1/livros")
-                .header("Accept-Language", "pt-BR")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(novoLivroRequest)))
-                .andExpect(jsonPath("$.listaErros[0].campo").value("preco"))
-                .andExpect(jsonPath("$.listaErros[0].erro").value("deve ser maior que ou igual à 20"));
-    }
-
-    @Test
-    @DisplayName("Deve retornar erro 400 quando número pagina maior ou igual que 100")
-    void deveRetornarErro400QuandoNumeroPaginaMenorQue100() throws Exception {
-        NovoLivroRequest novoLivroRequest = NovoLivroRequestDataBuilder
-                .umLivroCustomizado(categoria, autor)
-                .comNumeroPaginas(99)
-                .build();
-
-        mockMvc.perform(post("/v1/livros")
-                .header("Accept-Language", "pt-BR")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(novoLivroRequest)))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    @DisplayName("Deve mostrar erro quando número página maior ou igual a que 100")
-    void deveMostrarErroQuandoNumeroPaginaMenorQue100() throws Exception {
-        NovoLivroRequest novoLivroRequest = NovoLivroRequestDataBuilder
-                .umLivroCustomizado(categoria, autor)
-                .comNumeroPaginas(99)
-                .build();
-
-        mockMvc.perform(post("/v1/livros")
-                .header("Accept-Language", "pt-BR")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(novoLivroRequest)))
-                .andExpect(jsonPath("$.listaErros[0].campo").value("numeroPaginas"))
-                .andExpect(jsonPath("$.listaErros[0].erro").value("deve ser maior que ou igual à 100"));
-    }
-
-    @Test
-    @DisplayName("Deve retornar erro 400 quando isbn em branco")
-    void deveRetornarErro400QuandoIsbnEmBranco() throws Exception {
-        NovoLivroRequest novoLivroRequest = NovoLivroRequestDataBuilder
-                .umLivroCustomizado(categoria, autor)
-                .comIsbn("")
-                .build();
-
-        mockMvc.perform(post("/v1/livros")
-                .header("Accept-Language", "pt-BR")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(novoLivroRequest)))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    @DisplayName("Deve mostrar erro quando isbn em branco")
-    void deveMostrarErroQuandoIsbnEmBranco() throws Exception {
-        NovoLivroRequest novoLivroRequest = NovoLivroRequestDataBuilder
-                .umLivroCustomizado(categoria, autor)
-                .comIsbn("")
-                .build();
-
-        mockMvc.perform(post("/v1/livros")
-                .header("Accept-Language", "pt-BR")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(novoLivroRequest)))
-                .andExpect(jsonPath("$.listaErros[0].campo").value("isbn"))
-                .andExpect(jsonPath("$.listaErros[0].erro").value("não deve estar em branco"));
     }
 
     @Test
@@ -347,83 +174,6 @@ class NovoLivroControllerTest {
                 .content(objectMapper.writeValueAsString(novoLivroRequest)))
                 .andExpect(jsonPath("$.listaErros[0].campo").value("isbn"))
                 .andExpect(jsonPath("$.listaErros[0].erro").value("já está cadastrado"));
-    }
-
-    @Test
-    @DisplayName("Deve retornar erro 400 quando dataPublicacao está nula")
-    void deveRetornarErro400QuandoDataPublicacaoNula() throws Exception {
-        NovoLivroRequest novoLivroRequest = NovoLivroRequestDataBuilder
-                .umLivroCustomizado(categoria, autor)
-                .comDataPublicacao(null)
-                .build();
-
-        mockMvc.perform(post("/v1/livros")
-                .header("Accept-Language", "pt-BR")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(novoLivroRequest)))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    @DisplayName("Deve mostrar erro quando dataPublicacao está nula")
-    void deveMostrarErroQuandoDataPublicacaoNula() throws Exception {
-        NovoLivroRequest novoLivroRequest = NovoLivroRequestDataBuilder
-                .umLivroCustomizado(categoria, autor)
-                .comDataPublicacao(null)
-                .build();
-
-        mockMvc.perform(post("/v1/livros")
-                .header("Accept-Language", "pt-BR")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(novoLivroRequest)))
-                .andExpect(jsonPath("$.listaErros[0].campo").value("dataPublicacao"))
-                .andExpect(jsonPath("$.listaErros[0].erro").value("não deve ser nulo"));
-    }
-
-    @Test
-    @DisplayName("Deve retornar erro 400 quando dataPublicacao está no passado")
-    void deveRetornarErro400QuandoDataPublicacaoNoPassado() throws Exception {
-        NovoLivroRequest novoLivroRequest = NovoLivroRequestDataBuilder
-                .umLivroCustomizado(categoria, autor)
-                .comDataPublicacao(LocalDate.now().minusMonths(1))
-                .build();
-
-        mockMvc.perform(post("/v1/livros")
-                .header("Accept-Language", "pt-BR")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(novoLivroRequest)))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    @DisplayName("Deve mostrar erro quando dataPublicacao está no passado")
-    void deveMostrarErroQuandoDataPublicacaoNoPassado() throws Exception {
-        NovoLivroRequest novoLivroRequest = NovoLivroRequestDataBuilder
-                .umLivroCustomizado(categoria, autor)
-                .comDataPublicacao(LocalDate.now().minusDays(30))
-                .build();
-
-        mockMvc.perform(post("/v1/livros")
-                .header("Accept-Language", "pt-BR")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(novoLivroRequest)))
-                .andExpect(jsonPath("$.listaErros[0].campo").value("dataPublicacao"))
-                .andExpect(jsonPath("$.listaErros[0].erro").value("deve ser uma data futura"));
-    }
-
-    @Test
-    @DisplayName("Deve retornar erro 400 quando categoria está nula")
-    void deveRetornarErro400QuandoCategoriaNula() throws Exception {
-        NovoLivroRequest novoLivroRequest = NovoLivroRequestDataBuilder
-                .umLivroCustomizado(categoria, autor)
-                .comIdCategoria(null)
-                .build();
-
-        mockMvc.perform(post("/v1/livros")
-                .header("Accept-Language", "pt-BR")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(novoLivroRequest)))
-                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -471,21 +221,6 @@ class NovoLivroControllerTest {
                 .content(objectMapper.writeValueAsString(novoLivroRequest)))
                 .andExpect(jsonPath("$.listaErros[0].campo").value("idCategoria"))
                 .andExpect(jsonPath("$.listaErros[0].erro").value("Categoria não encontrada"));
-    }
-
-    @Test
-    @DisplayName("Deve retornar erro 400 quando autor nulo")
-    void deveRetornarErro400QuandoAutorNulo() throws Exception {
-        NovoLivroRequest novoLivroRequest = NovoLivroRequestDataBuilder
-                .umLivroCustomizado(categoria, autor)
-                .comIdAutor(null)
-                .build();
-
-        mockMvc.perform(post("/v1/livros")
-                .header("Accept-Language", "pt-BR")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(novoLivroRequest)))
-                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -547,5 +282,124 @@ class NovoLivroControllerTest {
     private Livro criarLivro(Categoria categoria, Autor autor) {
         Livro livro = NovoLivroRequestDataBuilder.umLivroCustomizado(categoria, autor).build().toModel(categoriaRepository, autorRepository);
         return livroRepository.save(livro);
+    }
+
+    static Stream<Arguments> fornecerDadosParaErrosHttpStatus() {
+        return Stream.of(
+                Arguments.of(
+                        NovoLivroRequestDataBuilder.umLivroSemTituloCategoriaAutor(),
+                        400,
+                        "Título em branco"
+                ),
+                Arguments.of(
+                        NovoLivroRequestDataBuilder.umLivro().comResumo(""),
+                        400,
+                        "Resumo em branco"
+                ),
+                Arguments.of(
+                        NovoLivroRequestDataBuilder.umLivro().comResumo("a".repeat(501)),
+                        400,
+                        "Resumo com mais 500 caracteres"
+                ),
+                Arguments.of(
+                        NovoLivroRequestDataBuilder.umLivro().comPreco(null),
+                        400,
+                        "Preço nulo"
+                ),
+                Arguments.of(
+                        NovoLivroRequestDataBuilder.umLivro().comPreco(new BigDecimal("19")),
+                        400,
+                        "Preço menor que 20"
+                ),
+                Arguments.of(
+                        NovoLivroRequestDataBuilder.umLivro().comNumeroPaginas(99),
+                        400,
+                        "Número página menor que 100"
+                ),
+                Arguments.of(
+                        NovoLivroRequestDataBuilder.umLivro().comIsbn(""),
+                        400,
+                        "Isbn em branco"
+                ),
+                Arguments.of(
+                        NovoLivroRequestDataBuilder.umLivro().comDataPublicacao(null),
+                        400,
+                        "Data publicação nula"
+                ),
+                Arguments.of(
+                        NovoLivroRequestDataBuilder.umLivro().comDataPublicacao(LocalDate.now().minusMonths(1)),
+                        400,
+                        "Data publicação no passado"
+                ),
+                Arguments.of(
+                        NovoLivroRequestDataBuilder.umLivro().comIdCategoria(null),
+                        400,
+                        "Categoria nula"
+                ),
+                Arguments.of(
+                        NovoLivroRequestDataBuilder.umLivro().comIdAutor(null),
+                        400,
+                        "Autor nulo"
+                )
+        );
+    }
+
+    static Stream<Arguments> fornecerDadosParaMensagensErro() {
+        return Stream.of(
+                Arguments.of(
+                        NovoLivroRequestDataBuilder.umLivroSemTituloCategoriaAutor(),
+                        "titulo",
+                        "não deve estar em branco",
+                        "Título em branco"
+                ),
+                Arguments.of(
+                        NovoLivroRequestDataBuilder.umLivro().comResumo(""),
+                        "resumo",
+                        "não deve estar em branco",
+                        "Resumo em branco"
+                ),
+                Arguments.of(
+                        NovoLivroRequestDataBuilder.umLivro().comResumo("a".repeat(501)),
+                        "resumo",
+                        "o comprimento deve ser entre 0 e 500",
+                        "Resumo com mais 500 caracteres"
+                ),
+                Arguments.of(
+                        NovoLivroRequestDataBuilder.umLivro().comPreco(null),
+                        "preco",
+                        "não deve ser nulo",
+                        "Preço nulo"
+                ),
+                Arguments.of(
+                        NovoLivroRequestDataBuilder.umLivro().comPreco(new BigDecimal("19")),
+                        "preco",
+                        "deve ser maior que ou igual à 20",
+                        "Preço menor que 20"
+                ),
+                Arguments.of(
+                        NovoLivroRequestDataBuilder.umLivro().comNumeroPaginas(99),
+                        "numeroPaginas",
+                        "deve ser maior que ou igual à 100",
+                        "Número página menor que 100"
+                ),
+                Arguments.of(
+                        NovoLivroRequestDataBuilder.umLivro().comIsbn(""),
+                        "isbn",
+                        "não deve estar em branco",
+                        "Isbn em branco"
+                ),
+                Arguments.of(
+                        NovoLivroRequestDataBuilder.umLivro().comDataPublicacao(null),
+                        "dataPublicacao",
+                        "não deve ser nulo",
+                        "Data publicação nula"
+                ),
+                Arguments.of(
+                        NovoLivroRequestDataBuilder.umLivro().comDataPublicacao(LocalDate.now().minusMonths(1)),
+                        "dataPublicacao",
+                        "deve ser uma data futura",
+                        "Data publicação no passado"
+                )
+        );
     }
 }
