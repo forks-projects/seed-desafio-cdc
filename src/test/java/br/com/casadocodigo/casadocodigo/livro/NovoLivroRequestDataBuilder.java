@@ -18,7 +18,7 @@ public class NovoLivroRequestDataBuilder {
     private Long idCategoria = 1L;
     private Long idAutor = 1L;
 
-    private NovoLivroRequestDataBuilder() {
+    public NovoLivroRequestDataBuilder() {
     }
 
     public static NovoLivroRequestDataBuilder umLivro() {
