@@ -9,7 +9,8 @@ public class NovoEstadoRequestBuilder {
         this.nome = "São Paulo";
         this.paisId = 1L;
     }
-    static NovoEstadoRequestBuilder umEstado() {
+
+    public static NovoEstadoRequestBuilder umEstado() {
         return new NovoEstadoRequestBuilder();
     }
 
