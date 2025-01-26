@@ -63,7 +63,7 @@ class NovoClienteControllerTest {
     @ParameterizedTest(name = "[{index}] {2}")
     @MethodSource("fornecerDadosParaErrosHttpStatus")
     @DisplayName("Deve retornar erro 400 quando cadastrar cliente com dados invalidos")
-    void deveRetornarErro400QuandoCadastrarEstadoComDadosInvalidos(NovoClienteRequestBuilder novoClienteRequestBuilder, int statusEsperado, String descricaoErro) throws Exception {
+    void deveRetornarErro400QuandoCadastrarClienteComDadosInvalidos(NovoClienteRequestBuilder novoClienteRequestBuilder, int statusEsperado, String descricaoErro) throws Exception {
         NovoClienteRequest novoClienteRequest = novoClienteRequestBuilder.build();
 
         mockMvc.perform(post("/v1/clientes")
@@ -71,6 +71,24 @@ class NovoClienteControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(novoClienteRequest)))
                 .andExpect(status().is(statusEsperado));
+    }
+
+    @ParameterizedTest(name = "[{index}] {3}")
+    @MethodSource("fornecerDadosParaMensagensErro")
+    @DisplayName("Deve mostrar mensagem de erro quando cadastrar cliente com dados invalidos")
+    void deveMostrarMensagemErroQuandoCadastrarClienteComDadosInvalidos(NovoClienteRequestBuilder novoClienteRequestBuilder, String nomeCampo, String mensagemErro, String descricaoErro) throws Exception {
+        NovoClienteRequest novoClienteRequest = novoClienteRequestBuilder.comIdPais(null).build();
+        if (!nomeCampo.equals("idPais")) {
+            Pais pais = paisRepository.save(new Pais("Brasil"));
+            novoClienteRequest = novoClienteRequestBuilder.comIdPais(pais.getId()).build();
+        }
+
+        mockMvc.perform(post("/v1/clientes")
+                        .header("Accept-Language", "pt-BR")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(novoClienteRequest)))
+                .andExpect(jsonPath("$.listaErros[0].campo").value(nomeCampo))
+                .andExpect(jsonPath("$.listaErros[0].erro").value(mensagemErro));
     }
 
     @Test
@@ -213,9 +231,71 @@ class NovoClienteControllerTest {
                         400,
                         "CEP não deve estar em branco"
                 )
-
-
         );
     }
 
+    static Stream<Arguments> fornecerDadosParaMensagensErro() {
+        return Stream.of(
+                Arguments.of(
+                        NovoClienteRequestBuilder.umCliente().comEmail(""),
+                        "email",
+                        "não deve estar em branco",
+                        "Email em branco"
+                ),
+                Arguments.of(
+                        NovoClienteRequestBuilder.umCliente().comEmail("email_email"),
+                        "email",
+                        "deve ser um endereço de e-mail bem formado",
+                        "Email mal formado"
+                ),
+                Arguments.of(
+                        NovoClienteRequestBuilder.umCliente().comNome(""),
+                        "nome",
+                        "não deve estar em branco",
+                        "Nome não deve estar em branco"
+                ),
+                Arguments.of(
+                        NovoClienteRequestBuilder.umCliente().comSobreNome(""),
+                        "sobreNome",
+                        "não deve estar em branco",
+                        "Sobrenome não deve estar em branco"
+                ),
+                Arguments.of(
+                        NovoClienteRequestBuilder.umCliente().comEndereco(""),
+                        "endereco",
+                        "não deve estar em branco",
+                        "Endereço não pode estar em branco"
+                ),
+                Arguments.of(
+                        NovoClienteRequestBuilder.umCliente().comComplemento(""),
+                        "complemento",
+                        "não deve estar em branco",
+                        "Complemento não deve estar em branco"
+                ),
+                Arguments.of(
+                        NovoClienteRequestBuilder.umCliente().comCidade(""),
+                        "cidade",
+                        "não deve estar em branco",
+                        "Cidade não deve estar em branco"
+                ),
+                Arguments.of(
+                        NovoClienteRequestBuilder.umCliente().comIdPais(null),
+                        "idPais",
+                        "não deve ser nulo",
+                        "IdPais não deve ser nulo"
+                ),
+                Arguments.of(
+                        NovoClienteRequestBuilder.umCliente().comTelefone(""),
+                        "telefone",
+                        "não deve estar em branco",
+                        "Telefone não deve estar em branco"
+                ),
+                Arguments.of(
+                        NovoClienteRequestBuilder.umCliente().comCep(""),
+                        "cep",
+                        "não deve estar em branco",
+                        "CEP não deve estar em branco"
+                )
+        );
+    }
 }
