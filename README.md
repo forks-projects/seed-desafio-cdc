@@ -221,3 +221,68 @@ Aqui você tem mais uma oportunidade de treinar uma operação similar a que voc
 COLOQUE UM CRONÔMETRO, ESTIME O TEMPO PARA FAZER E SE DESAFIE.
 
 COMO ALBERTO FARIA ESSE CÓDIGO?
+
+### Começo do fluxo de pagamento - parte1
+**necessidades**
+
+Uma coisa importante. Na cdc, você não faz um cadastro e tem suas compras associadas. Toda vez você coloca seu email, cpf/cnpj etc. Como isso vai ser implementado depende da aplicação.
+
+Os seguintes campos precisam ser preenchidos:
+- email
+- nome
+- sobrenome
+- documento(cpf/cnpj)
+- endereco
+- complemento
+- cidade
+- pais
+- estado(caso aquele pais tenha estado)
+- telefone
+- cep
+
+**restrição**
+
+email obrigatório e com formato adequado
+nome obrigatório
+sobrenome obrigatório
+documento(cpf/cnpj) obrigatório e só precisa ser um cpf ou cnpj
+endereco obrigatório
+complemento obrigatório
+cidade obrigatório
+país obrigatório
+se o país tiver estados, um estado precisa ser selecionado
+estado(caso aquele pais tenha estado) - apenas se o país tiver cadastro de estados
+telefone obrigatório
+cep é obrigatório
+
+**resultado esperado**
+
+Compra parcialmente gerada, mas ainda não gravada no banco de dados. Falta os dados do pedido em si que vão ser trabalhados no próximo cartão.
+
+**sobre a utilização do material de suporte aqui**
+
+Este começo de fechamento de compra envolve muitos passos. Decidimos começar pegando apenas os dados do formulário relativo a pessoa que está comprando. 
+
+Este é um formulário um pouco mais desafiador, já que possuímos algumas validações customizadas que precisam ser feitas. Não tem nada que você não tenha trabalhado até aqui, mas é mais uma chance de você treinar sua habilidade para conhecer mais das tecnologias e colocar em prática alguns dos pilares que vem nos norteando. ​
+
+**informações de suporte para a feature**
+
+A PRIORIDADE DO CÓDIGO É FUNCIONAR. Se você tentar implementar tudo necessário para criar a versão inicial da compra, vai demorar muito para ver seu código rodando a primeira vez. Lembre que quanto mais você demora de rodar, maior é a chance de ter mais de um problema na primeira execução. OLHE TAMBÉM ESTE OUTRO VÍDEO SOBRE A IMPORTÂNCIA DE PRIORIZAR O FUNCIONAMENTO DO CÓDIGO
+
+CONTROLLERS 100% COESOS para lembrar você a nossa ideia de ter controllers que utilizam todos os atributos.
+
+Como foi que você fez para receber os dados da requisição? Será que aproveitou a facilidade do framework e recebeu a sua entidade(objeto que faz parte do domínio) direto no método mapeado para um endereço? DÁ UMA OLHADA NESSE PILAR AQUI.
+
+Dado que você separou os dados que chegam da request do objeto de domínio, como vai fazer para converter dessa entrada para o domínio? SUGIRO OLHAR UM POUCO SOBRE NOSSA IDEIA DE FORM VALUE OBJECTS. Esse aqui é um formulário bem mais complexo, pois provavelmente vai possuir muito mais dependências. Vai ser um belo desafio.
+
+Muitos dos problemas de uma aplicação vem do fato dela trabalhar com objetos em estado inválido. O ponto mais crítico em relação a isso é justamente quando os dados vêm de outra fonte, por exemplo um cliente externo. É por isso que temos o seguinte pilar: quanto mais externa é a borda mais proteção nós temos. Confira uma explicação sobre ele AQUI e depois AQUI
+
+FAVORECEMOS A COESÃO ATRAVÉS DO ENCAPSULAMENTO. Como você planeja validar se o documento é válido?
+
+Utilize um insomnia ou qualquer outra forma para verificar o endpoint
+
+PEGUE CADA UMA DAS CLASSES QUE VOCÊ CRIOU E REALIZE A CONTAGEM DA CARGA INTRÍNSECA. Esse é o viés de design que estamos trabalhando. Precisamos nos habituar a fazer isso para que se torne algo automático na nossa vida.
+
+COMO ALBERTO FARIA ESSE CÓDIGO?
+
+UMA OUTRA SOLUÇÃO PARA A VALIDAÇÃO DO DOCUMENTO DO USUÁRIO.
