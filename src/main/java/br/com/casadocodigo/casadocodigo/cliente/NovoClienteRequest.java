@@ -4,6 +4,7 @@ import br.com.casadocodigo.casadocodigo.estado.Estado;
 import br.com.casadocodigo.casadocodigo.estado.EstadoRepository;
 import br.com.casadocodigo.casadocodigo.pais.Pais;
 import br.com.casadocodigo.casadocodigo.pais.PaisRepository;
+import br.com.casadocodigo.casadocodigo.share.DocumentoValido;
 import br.com.casadocodigo.casadocodigo.share.ExisteId;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -32,6 +33,7 @@ public class NovoClienteRequest {
     private String sobreNome;
 
     @NotBlank
+    @DocumentoValido
     private String cpfCnpj;
 
     @NotBlank

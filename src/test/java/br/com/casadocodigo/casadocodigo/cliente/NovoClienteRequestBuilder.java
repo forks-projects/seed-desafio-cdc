@@ -17,7 +17,9 @@ public class NovoClienteRequestBuilder {
         this.email = "cliente@teste.com";
         this.nome = "Nome Teste";
         this.sobreNome = "Sobrenome Teste";
-        this.cpfCnpj = "12345678900";
+        this.cpfCnpj = "704.724.660-62";
+//        exemplo de cnpj
+//        this.cpfCnpj = "12.970.137/0001-58";
         this.endereco = "Rua Teste, 123";
         this.complemento = "Apto 101";
         this.telefone = "(11) 99999-9999";

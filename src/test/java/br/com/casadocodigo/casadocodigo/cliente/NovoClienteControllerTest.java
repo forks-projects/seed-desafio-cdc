@@ -202,6 +202,11 @@ class NovoClienteControllerTest {
                         "Sobrenome não deve estar em branco"
                 ),
                 Arguments.of(
+                        NovoClienteRequestBuilder.umCliente().comCpfCnpj("123456"),
+                        400,
+                        "CpfCnpj inválido"
+                ),
+                Arguments.of(
                         NovoClienteRequestBuilder.umCliente().comEndereco(""),
                         400,
                         "Endereço não pode estar em branco"
@@ -259,6 +264,12 @@ class NovoClienteControllerTest {
                         "sobreNome",
                         "não deve estar em branco",
                         "Sobrenome não deve estar em branco"
+                ),
+                Arguments.of(
+                        NovoClienteRequestBuilder.umCliente().comCpfCnpj("123"),
+                        "cpfCnpj",
+                        "inválido. Utilize o formato 999.999.999-99 para CPF ou 99.999.999/9999-99 para CNPJ",
+                        "CPF ou CNPJ não deve estar em branco"
                 ),
                 Arguments.of(
                         NovoClienteRequestBuilder.umCliente().comEndereco(""),
