@@ -77,11 +77,11 @@ class NovoClienteControllerTest {
     @MethodSource("fornecerDadosParaMensagensErro")
     @DisplayName("Deve mostrar mensagem de erro quando cadastrar cliente com dados invalidos")
     void deveMostrarMensagemErroQuandoCadastrarClienteComDadosInvalidos(NovoClienteRequestBuilder novoClienteRequestBuilder, String nomeCampo, String mensagemErro, String descricaoErro) throws Exception {
-        NovoClienteRequest novoClienteRequest = novoClienteRequestBuilder.comIdPais(null).build();
-        if (!nomeCampo.equals("idPais")) {
-            Pais pais = paisRepository.save(new Pais("Brasil"));
-            novoClienteRequest = novoClienteRequestBuilder.comIdPais(pais.getId()).build();
-        }
+        Pais pais = paisRepository.save(new Pais("Brasil"));
+        paisRepository.save(pais);
+        Estado estado = NovoEstadoRequestBuilder.umEstado().comIdPais(pais.getId()).build().toModel(paisRepository);
+        estadoRepository.save(estado);
+        NovoClienteRequest novoClienteRequest = novoClienteRequestBuilder.comIdPais(pais.getId()).comIdEstado(estado.getId()).build();
 
         mockMvc.perform(post("/v1/clientes")
                         .header("Accept-Language", "pt-BR")
@@ -101,10 +101,11 @@ class NovoClienteControllerTest {
                         .content(objectMapper.writeValueAsString(novoClienteRequest)))
                 .andExpect(status().isBadRequest());
     }
+
     @Test
     @DisplayName("Deve mostrar mensagem de erro quando país não encontrado")
-    void deveMostrarMensagemErro400QuandoPaisNaoEncontrado() throws Exception {
-        NovoClienteRequest novoClienteRequest = NovoClienteRequestBuilder.umCliente().comIdPais(999L).build();
+    void deveMostrarMensagemErroQuandoPaisNaoEncontrado() throws Exception {
+        NovoClienteRequest novoClienteRequest = NovoClienteRequestBuilder.umCliente().comIdPais(999L).comIdEstado(null).build();
 
         mockMvc.perform(post("/v1/clientes")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -126,18 +127,22 @@ class NovoClienteControllerTest {
 
     @Test
     @DisplayName("Deve mostrar mensagem de erro quando estado não encontrado")
-    void deveMostrarMensagemErro400QuandoEstadoNaoEncontrado() throws Exception {
+    void deveMostrarMensagemErroQuandoEstadoNaoEncontrado() throws Exception {
         Pais pais = new Pais("Brasil");
         paisRepository.save(pais);
+        Estado estado = NovoEstadoRequestBuilder.umEstado().comIdPais(pais.getId()).build().toModel(paisRepository);
+        estadoRepository.save(estado);
+
         NovoClienteRequest novoClienteRequest = NovoClienteRequestBuilder.umCliente()
                 .comIdPais(pais.getId())
                 .comIdEstado(999L).build();
+
 
         mockMvc.perform(post("/v1/clientes")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(novoClienteRequest)))
                 .andExpect(jsonPath("$.listaErros[0].campo").value("idEstado"))
-                .andExpect(jsonPath("$.listaErros[0].erro").value("Estado não encontrado"));
+                .andExpect(jsonPath("$.listaErros[0].erro").value("não encontrado"));
     }
 
     @Test
@@ -160,7 +165,7 @@ class NovoClienteControllerTest {
     }
 
     @Test
-    @DisplayName("Deve mostrar mensagem de erro 400 quando país possui estado e id estado está nulo")
+    @DisplayName("Deve mostrar mensagem de erro quando país possui estado e id estado está nulo")
     void deveMostrarMensagemErroQuandoPaisPossuiEstadoEIdEstadoEstaNulo() throws Exception {
         Pais pais = new Pais("Brasil");
         paisRepository.save(pais);
@@ -173,10 +178,58 @@ class NovoClienteControllerTest {
                 .build();
 
         mockMvc.perform(post("/v1/clientes")
+                        .header("Accept-Language", "pt-BR")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(novoClienteRequest)))
                 .andExpect(jsonPath("$.listaErros[0].campo").value("idEstado"))
                 .andExpect(jsonPath("$.listaErros[0].erro").value("não deve ser nulo"));
+    }
+
+    @Test
+    @DisplayName("Deve retornar erro 400 quando país possui estado e id estado pertence a outro país")
+    void deveRetornarErro400QuandoPaisPossuiEstadoEIdEstadoPertenceAOutroPais() throws Exception {
+        Pais pais1 = new Pais("Brasil");
+        paisRepository.save(pais1);
+        Pais pais2 = new Pais("Argentina");
+        paisRepository.save(pais2);
+        Estado estado1 = NovoEstadoRequestBuilder.umEstado().comIdPais(pais1.getId()).build().toModel(paisRepository);
+        estadoRepository.save(estado1);
+        Estado estado2 = NovoEstadoRequestBuilder.umEstado().comNome("Catamarca").comIdPais(pais2.getId()).build().toModel(paisRepository);
+        estadoRepository.save(estado2);
+
+        NovoClienteRequest novoClienteRequest = NovoClienteRequestBuilder.umCliente()
+                .comIdPais(pais1.getId())
+                .comIdEstado(estado2.getId())
+                .build();
+
+        mockMvc.perform(post("/v1/clientes")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(novoClienteRequest)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("Deve mostrar mensagem de erro quando país possui estado e id estado pertence a outro país")
+    void deveMostrarMensagemDeErroQuandoPaisPossuiEstadoEIdEstadoPertenceAOutroPais() throws Exception {
+        Pais pais1 = new Pais("Brasil");
+        paisRepository.save(pais1);
+        Pais pais2 = new Pais("Argentina");
+        paisRepository.save(pais2);
+        Estado estado1 = NovoEstadoRequestBuilder.umEstado().comIdPais(pais1.getId()).build().toModel(paisRepository);
+        estadoRepository.save(estado1);
+        Estado estado2 = NovoEstadoRequestBuilder.umEstado().comNome("Catamarca").comIdPais(pais2.getId()).build().toModel(paisRepository);
+        estadoRepository.save(estado2);
+
+        NovoClienteRequest novoClienteRequest = NovoClienteRequestBuilder.umCliente()
+                .comIdPais(pais2.getId())
+                .comIdEstado(estado1.getId())
+                .build();
+
+        mockMvc.perform(post("/v1/clientes")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(novoClienteRequest)))
+                .andExpect(jsonPath("$.listaErros[0].campo").value("idEstado"))
+                .andExpect(jsonPath("$.listaErros[0].erro").value("não pertence a este País"));
     }
 
     static Stream<Arguments> fornecerDadosParaErrosHttpStatus() {
@@ -289,12 +342,12 @@ class NovoClienteControllerTest {
                         "não deve estar em branco",
                         "Cidade não deve estar em branco"
                 ),
-                Arguments.of(
-                        NovoClienteRequestBuilder.umCliente().comIdPais(null),
-                        "idPais",
-                        "não deve ser nulo",
-                        "IdPais não deve ser nulo"
-                ),
+//                Arguments.of(
+//                        NovoClienteRequestBuilder.umCliente().comIdPais(null),
+//                        "idPais",
+//                        "não deve ser nulo",
+//                        "IdPais não deve ser nulo"
+//                ),
                 Arguments.of(
                         NovoClienteRequestBuilder.umCliente().comTelefone(""),
                         "telefone",

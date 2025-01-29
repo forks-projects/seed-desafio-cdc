@@ -5,22 +5,16 @@ import br.com.casadocodigo.casadocodigo.estado.EstadoRepository;
 import br.com.casadocodigo.casadocodigo.pais.Pais;
 import br.com.casadocodigo.casadocodigo.pais.PaisRepository;
 import br.com.casadocodigo.casadocodigo.share.DocumentoValido;
+import br.com.casadocodigo.casadocodigo.share.EstadoValido;
 import br.com.casadocodigo.casadocodigo.share.ExisteId;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpStatus;
-import org.springframework.validation.BeanPropertyBindingResult;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.lang.reflect.Method;
-import java.util.List;
-import java.util.Objects;
-
+@EstadoValido
 public class NovoClienteRequest {
     @NotBlank
     @Email
@@ -55,7 +49,6 @@ public class NovoClienteRequest {
     @ExisteId(classeDaEntidade = Pais.class, nomeDoCampo = "id", message = "País não encontrado")
     private Long idPais;
 
-    @ExisteId(classeDaEntidade = Estado.class, nomeDoCampo = "id", message = "Estado não encontrado")
     private Long idEstado;
 
     public NovoClienteRequest(@NotBlank @Email String email,
@@ -130,18 +123,9 @@ public class NovoClienteRequest {
         Pais pais = paisRepository.findById(idPais).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "País não encontrado")
         );
-        Estado estado = null;
-
-        List<Estado> estadosDeUmPais = estadoRepository.findByPaisId(pais.getId());
-        if (!estadosDeUmPais.isEmpty() && Objects.isNull(idEstado)) {
-            throw criarMethodArgumentNotValidException("idEstado", "não deve ser nulo");
-        }
-
-        if(!Objects.isNull(idEstado)) {
-            estado = estadoRepository.findById(idEstado).orElseThrow(
-                    ()-> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Estado não encontrado")
-            );
-        }
+        Estado estado = estadoRepository.findById(idEstado).orElseThrow(
+                ()-> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Estado não encontrado")
+        );
 
         return new Cliente(
                 email,
@@ -156,19 +140,5 @@ public class NovoClienteRequest {
                 pais,
                 estado
         );
-    }
-
-    private MethodArgumentNotValidException criarMethodArgumentNotValidException(String nomeCampo, String mensagemErro) {
-        try {
-            Method metodo = this.getClass().getDeclaredMethod("toModel", PaisRepository.class, EstadoRepository.class);
-            MethodParameter parametroMetodo = new MethodParameter(metodo, 0);
-
-            BindingResult bindingResult = new BeanPropertyBindingResult(this, "testController");
-            bindingResult.addError(new FieldError(nomeCampo, nomeCampo, mensagemErro));
-
-            return new MethodArgumentNotValidException(parametroMetodo, bindingResult);
-        } catch (NoSuchMethodException e) {
-            throw new RuntimeException("Erro ao criar MethodParameter para o método", e);
-        }
     }
 }

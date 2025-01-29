@@ -8,4 +8,6 @@ INSERT INTO livros (id, autor_id, categoria_id, data_publicacao, isbn, numero_pa
 INSERT INTO livros (id, autor_id, categoria_id, data_publicacao, isbn, numero_paginas, preco, resumo, sumario, titulo) VALUES (default, 1, 2, '2025-06-15', 'abcasdf012', 250, 35.90, 'Livro de programação', 'Um sumário muito interessante', 'Java');
 
 INSERT INTO paises (id, nome) VALUES (default, 'Brasil');
+INSERT INTO paises (id, nome) VALUES (default, 'Argentina');
 INSERT INTO estados (id, nome, pais_id) VALUES (default, 'São Paulo', 1);
+INSERT INTO estados (id, nome, pais_id) VALUES (default, 'Catamarca', 2);
