@@ -1,6 +1,6 @@
-package br.com.casadocodigo.casadocodigo.cliente;
+package br.com.casadocodigo.casadocodigo.pagamento;
 
-public class NovoClienteRequestBuilder {
+public class NovoPagamentoRequestBuilder {
     private String email;
     private String nome;
     private String sobreNome;
@@ -13,7 +13,7 @@ public class NovoClienteRequestBuilder {
     private Long idPais;
     private Long idEstado;
 
-    public NovoClienteRequestBuilder() {
+    public NovoPagamentoRequestBuilder() {
         this.email = "cliente@teste.com";
         this.nome = "Nome Teste";
         this.sobreNome = "Sobrenome Teste";
@@ -29,67 +29,67 @@ public class NovoClienteRequestBuilder {
         this.idEstado = null;
     }
 
-    public NovoClienteRequestBuilder comEmail(String email) {
+    public NovoPagamentoRequestBuilder comEmail(String email) {
         this.email = email;
         return this;
     }
 
-    public NovoClienteRequestBuilder comNome(String nome) {
+    public NovoPagamentoRequestBuilder comNome(String nome) {
         this.nome = nome;
         return this;
     }
 
-    public NovoClienteRequestBuilder comSobreNome(String sobreNome) {
+    public NovoPagamentoRequestBuilder comSobreNome(String sobreNome) {
         this.sobreNome = sobreNome;
         return this;
     }
 
-    public NovoClienteRequestBuilder comCpfCnpj(String cpfCnpj) {
+    public NovoPagamentoRequestBuilder comCpfCnpj(String cpfCnpj) {
         this.cpfCnpj = cpfCnpj;
         return this;
     }
 
-    public NovoClienteRequestBuilder comEndereco(String endereco) {
+    public NovoPagamentoRequestBuilder comEndereco(String endereco) {
         this.endereco = endereco;
         return this;
     }
 
-    public NovoClienteRequestBuilder comComplemento(String complemento) {
+    public NovoPagamentoRequestBuilder comComplemento(String complemento) {
         this.complemento = complemento;
         return this;
     }
 
-    public NovoClienteRequestBuilder comTelefone(String telefone) {
+    public NovoPagamentoRequestBuilder comTelefone(String telefone) {
         this.telefone = telefone;
         return this;
     }
 
-    public NovoClienteRequestBuilder comCidade(String cidade) {
+    public NovoPagamentoRequestBuilder comCidade(String cidade) {
         this.cidade = cidade;
         return this;
     }
 
-    public NovoClienteRequestBuilder comCep(String cep) {
+    public NovoPagamentoRequestBuilder comCep(String cep) {
         this.cep = cep;
         return this;
     }
 
-    public NovoClienteRequestBuilder comIdPais(Long idPais) {
+    public NovoPagamentoRequestBuilder comIdPais(Long idPais) {
         this.idPais = idPais;
         return this;
     }
 
-    public NovoClienteRequestBuilder comIdEstado(Long idEstado) {
+    public NovoPagamentoRequestBuilder comIdEstado(Long idEstado) {
         this.idEstado = idEstado;
         return this;
     }
 
-    public static NovoClienteRequestBuilder umCliente() {
-        return new NovoClienteRequestBuilder();
+    public static NovoPagamentoRequestBuilder umPagamento() {
+        return new NovoPagamentoRequestBuilder();
     }
 
-    public NovoClienteRequest build() {
-        return new NovoClienteRequest(
+    public NovoPagamentoRequest build() {
+        return new NovoPagamentoRequest(
                 email, nome, sobreNome, cpfCnpj, endereco, complemento, telefone, cep, cidade, idPais, idEstado
         );
     }

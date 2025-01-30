@@ -1,4 +1,4 @@
-package br.com.casadocodigo.casadocodigo.cliente;
+package br.com.casadocodigo.casadocodigo.pagamento;
 
 import br.com.casadocodigo.casadocodigo.estado.Estado;
 import br.com.casadocodigo.casadocodigo.pais.Pais;
@@ -13,7 +13,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 @Entity
-public class Cliente {
+public class Pagamento {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -55,17 +55,17 @@ public class Cliente {
     @Nullable
     private Estado estado;
 
-    public Cliente(@NotBlank @Email String email,
-                   @NotBlank String nome,
-                   @NotBlank String sobreNome,
-                   @NotBlank String cpfCnpj,
-                   @NotBlank String endereco,
-                   @NotBlank String complemento,
-                   @NotBlank String telefone,
-                   @NotBlank String cep,
-                   @NotBlank String cidade,
-                   @NotNull Pais pais,
-                   Estado estado) {
+    public Pagamento(@NotBlank @Email String email,
+                     @NotBlank String nome,
+                     @NotBlank String sobreNome,
+                     @NotBlank String cpfCnpj,
+                     @NotBlank String endereco,
+                     @NotBlank String complemento,
+                     @NotBlank String telefone,
+                     @NotBlank String cep,
+                     @NotBlank String cidade,
+                     @NotNull Pais pais,
+                     Estado estado) {
 
     }
 

@@ -1,6 +1,6 @@
 package br.com.casadocodigo.casadocodigo.share;
 
-import br.com.casadocodigo.casadocodigo.cliente.NovoClienteRequest;
+import br.com.casadocodigo.casadocodigo.pagamento.NovoPagamentoRequest;
 import br.com.casadocodigo.casadocodigo.estado.Estado;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -11,7 +11,7 @@ import jakarta.validation.ConstraintValidatorContext;
 import java.util.Objects;
 
 
-public class EstadoValidoValidator implements ConstraintValidator<EstadoValido, NovoClienteRequest> {
+public class EstadoValidoValidator implements ConstraintValidator<EstadoValido, NovoPagamentoRequest> {
     private String message;
 
     @PersistenceContext
@@ -23,14 +23,14 @@ public class EstadoValidoValidator implements ConstraintValidator<EstadoValido, 
     }
 
     @Override
-    public boolean isValid(NovoClienteRequest novoClienteRequest, ConstraintValidatorContext constraintValidatorContext) {
+    public boolean isValid(NovoPagamentoRequest novoPagamentoRequest, ConstraintValidatorContext constraintValidatorContext) {
         String jpql = "SELECT estado FROM Estado estado WHERE estado.pais.id = :pIdPais";
         Query query = entityManager.createQuery(jpql);
-        query.setParameter("pIdPais", novoClienteRequest.getIdPais());
+        query.setParameter("pIdPais", novoPagamentoRequest.getIdPais());
         int quantidadeDeEstadosPorPais = query.getResultList().size();
 
         if (quantidadeDeEstadosPorPais > 0) {
-            if (Objects.isNull(novoClienteRequest.getIdEstado())) {
+            if (Objects.isNull(novoPagamentoRequest.getIdEstado())) {
                 message = "não deve ser nulo";
                 constraintValidatorContext.disableDefaultConstraintViolation();
                 constraintValidatorContext.buildConstraintViolationWithTemplate(message).addPropertyNode("idEstado").addConstraintViolation();
@@ -39,7 +39,7 @@ public class EstadoValidoValidator implements ConstraintValidator<EstadoValido, 
 
             String jpqlEstadoPertenceAoPais = "SELECT estado FROM Estado estado WHERE estado.id = :pIdEstado";
             Query queryEstadoPertenceAoPais = entityManager.createQuery(jpqlEstadoPertenceAoPais);
-            queryEstadoPertenceAoPais.setParameter("pIdEstado", novoClienteRequest.getIdEstado());
+            queryEstadoPertenceAoPais.setParameter("pIdEstado", novoPagamentoRequest.getIdEstado());
 
             if (queryEstadoPertenceAoPais.getResultList().isEmpty()) {
                 message = "não encontrado";
@@ -50,7 +50,7 @@ public class EstadoValidoValidator implements ConstraintValidator<EstadoValido, 
 
             Estado estado = (Estado) queryEstadoPertenceAoPais.getResultList().get(0);
 
-            if (!novoClienteRequest.getIdPais().equals(estado.getPais().getId())) {
+            if (!novoPagamentoRequest.getIdPais().equals(estado.getPais().getId())) {
                 message = "não pertence a este País";
                 constraintValidatorContext.disableDefaultConstraintViolation();
                 constraintValidatorContext.buildConstraintViolationWithTemplate(message).addPropertyNode("idEstado").addConstraintViolation();

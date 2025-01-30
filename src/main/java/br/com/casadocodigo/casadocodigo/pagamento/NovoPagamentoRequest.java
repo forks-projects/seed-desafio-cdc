@@ -1,4 +1,4 @@
-package br.com.casadocodigo.casadocodigo.cliente;
+package br.com.casadocodigo.casadocodigo.pagamento;
 
 import br.com.casadocodigo.casadocodigo.estado.Estado;
 import br.com.casadocodigo.casadocodigo.estado.EstadoRepository;
@@ -15,7 +15,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.server.ResponseStatusException;
 
 @EstadoValido
-public class NovoClienteRequest {
+public class NovoPagamentoRequest {
     @NotBlank
     @Email
     private String email;
@@ -51,17 +51,17 @@ public class NovoClienteRequest {
 
     private Long idEstado;
 
-    public NovoClienteRequest(@NotBlank @Email String email,
-                              @NotBlank String nome,
-                              @NotBlank String sobreNome,
-                              @NotBlank String cpfCnpj,
-                              @NotBlank String endereco,
-                              @NotBlank String complemento,
-                              @NotBlank String telefone,
-                              @NotBlank String cep,
-                              @NotBlank String cidade,
-                              @NotNull Long idPais,
-                              Long idEstado) {
+    public NovoPagamentoRequest(@NotBlank @Email String email,
+                                @NotBlank String nome,
+                                @NotBlank String sobreNome,
+                                @NotBlank String cpfCnpj,
+                                @NotBlank String endereco,
+                                @NotBlank String complemento,
+                                @NotBlank String telefone,
+                                @NotBlank String cep,
+                                @NotBlank String cidade,
+                                @NotNull Long idPais,
+                                Long idEstado) {
         this.email = email;
         this.nome = nome;
         this.sobreNome = sobreNome;
@@ -119,7 +119,7 @@ public class NovoClienteRequest {
         return idEstado;
     }
 
-    public Cliente toModel(PaisRepository paisRepository, EstadoRepository estadoRepository) throws MethodArgumentNotValidException {
+    public Pagamento toModel(PaisRepository paisRepository, EstadoRepository estadoRepository) throws MethodArgumentNotValidException {
         Pais pais = paisRepository.findById(idPais).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "País não encontrado")
         );
@@ -127,7 +127,7 @@ public class NovoClienteRequest {
                 ()-> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Estado não encontrado")
         );
 
-        return new Cliente(
+        return new Pagamento(
                 email,
                 nome,
                 sobreNome,

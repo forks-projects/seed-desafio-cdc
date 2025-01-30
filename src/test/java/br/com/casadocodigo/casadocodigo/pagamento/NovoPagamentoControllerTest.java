@@ -1,4 +1,4 @@
-package br.com.casadocodigo.casadocodigo.cliente;
+package br.com.casadocodigo.casadocodigo.pagamento;
 
 import br.com.casadocodigo.casadocodigo.estado.Estado;
 import br.com.casadocodigo.casadocodigo.estado.EstadoRepository;
@@ -29,7 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @Transactional
-class NovoClienteControllerTest {
+class NovoPagamentoControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
@@ -43,50 +43,50 @@ class NovoClienteControllerTest {
     private EstadoRepository estadoRepository;
 
     @Test
-    @DisplayName("Deve ter cliente com dados validos")
-    void deveTerClienteComDadosValidos() throws Exception {
+    @DisplayName("Deve ter pagamento com dados validos")
+    void deveTerPagamentoComDadosValidos() throws Exception {
         Pais pais = new Pais("Brasil");
         paisRepository.save(pais);
         Estado estado = NovoEstadoRequestBuilder.umEstado().comIdPais(pais.getId()).build().toModel(paisRepository);
         estadoRepository.save(estado);
-        NovoClienteRequest novoClienteRequest = NovoClienteRequestBuilder.umCliente()
+        NovoPagamentoRequest novoPagamentoRequest = NovoPagamentoRequestBuilder.umPagamento()
                 .comIdPais(pais.getId())
                 .comIdEstado(estado.getId())
                 .build();
 
-        mockMvc.perform(post("/v1/clientes")
+        mockMvc.perform(post("/v1/pagamentos")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(novoClienteRequest)))
+                        .content(objectMapper.writeValueAsString(novoPagamentoRequest)))
                 .andExpect(status().isOk());
     }
 
     @ParameterizedTest(name = "[{index}] {2}")
     @MethodSource("fornecerDadosParaErrosHttpStatus")
-    @DisplayName("Deve retornar erro 400 quando cadastrar cliente com dados invalidos")
-    void deveRetornarErro400QuandoCadastrarClienteComDadosInvalidos(NovoClienteRequestBuilder novoClienteRequestBuilder, int statusEsperado, String descricaoErro) throws Exception {
-        NovoClienteRequest novoClienteRequest = novoClienteRequestBuilder.build();
+    @DisplayName("Deve retornar erro 400 quando cadastrar pagamento com dados invalidos")
+    void deveRetornarErro400QuandoCadastrarPagamentoComDadosInvalidos(NovoPagamentoRequestBuilder novoPagamentoRequestBuilder, int statusEsperado, String descricaoErro) throws Exception {
+        NovoPagamentoRequest novoPagamentoRequest = novoPagamentoRequestBuilder.build();
 
-        mockMvc.perform(post("/v1/clientes")
+        mockMvc.perform(post("/v1/pagamentos")
                         .header("Accept-Language", "pt-BR")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(novoClienteRequest)))
+                        .content(objectMapper.writeValueAsString(novoPagamentoRequest)))
                 .andExpect(status().is(statusEsperado));
     }
 
     @ParameterizedTest(name = "[{index}] {3}")
     @MethodSource("fornecerDadosParaMensagensErro")
-    @DisplayName("Deve mostrar mensagem de erro quando cadastrar cliente com dados invalidos")
-    void deveMostrarMensagemErroQuandoCadastrarClienteComDadosInvalidos(NovoClienteRequestBuilder novoClienteRequestBuilder, String nomeCampo, String mensagemErro, String descricaoErro) throws Exception {
+    @DisplayName("Deve mostrar mensagem de erro quando cadastrar pagamento com dados invalidos")
+    void deveMostrarMensagemErroQuandoCadastrarPagamentoComDadosInvalidos(NovoPagamentoRequestBuilder novoPagamentoRequestBuilder, String nomeCampo, String mensagemErro, String descricaoErro) throws Exception {
         Pais pais = paisRepository.save(new Pais("Brasil"));
         paisRepository.save(pais);
         Estado estado = NovoEstadoRequestBuilder.umEstado().comIdPais(pais.getId()).build().toModel(paisRepository);
         estadoRepository.save(estado);
-        NovoClienteRequest novoClienteRequest = novoClienteRequestBuilder.comIdPais(pais.getId()).comIdEstado(estado.getId()).build();
+        NovoPagamentoRequest novoPagamentoRequest = novoPagamentoRequestBuilder.comIdPais(pais.getId()).comIdEstado(estado.getId()).build();
 
-        mockMvc.perform(post("/v1/clientes")
+        mockMvc.perform(post("/v1/pagamentos")
                         .header("Accept-Language", "pt-BR")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(novoClienteRequest)))
+                        .content(objectMapper.writeValueAsString(novoPagamentoRequest)))
                 .andExpect(jsonPath("$.listaErros[0].campo").value(nomeCampo))
                 .andExpect(jsonPath("$.listaErros[0].erro").value(mensagemErro));
     }
@@ -94,22 +94,22 @@ class NovoClienteControllerTest {
     @Test
     @DisplayName("Deve retornar erro 400 quando país não encontrado")
     void deveRetornarErro400QuandoPaisNaoEncontrado() throws Exception {
-        NovoClienteRequest novoClienteRequest = NovoClienteRequestBuilder.umCliente().comIdPais(999L).build();
+        NovoPagamentoRequest novoPagamentoRequest = NovoPagamentoRequestBuilder.umPagamento().comIdPais(999L).build();
 
-        mockMvc.perform(post("/v1/clientes")
+        mockMvc.perform(post("/v1/pagamentos")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(novoClienteRequest)))
+                        .content(objectMapper.writeValueAsString(novoPagamentoRequest)))
                 .andExpect(status().isBadRequest());
     }
 
     @Test
     @DisplayName("Deve mostrar mensagem de erro quando país não encontrado")
     void deveMostrarMensagemErroQuandoPaisNaoEncontrado() throws Exception {
-        NovoClienteRequest novoClienteRequest = NovoClienteRequestBuilder.umCliente().comIdPais(999L).comIdEstado(null).build();
+        NovoPagamentoRequest novoPagamentoRequest = NovoPagamentoRequestBuilder.umPagamento().comIdPais(999L).comIdEstado(null).build();
 
-        mockMvc.perform(post("/v1/clientes")
+        mockMvc.perform(post("/v1/pagamentos")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(novoClienteRequest)))
+                        .content(objectMapper.writeValueAsString(novoPagamentoRequest)))
                 .andExpect(jsonPath("$.listaErros[0].campo").value("idPais"))
                 .andExpect(jsonPath("$.listaErros[0].erro").value("País não encontrado"));
     }
@@ -117,11 +117,11 @@ class NovoClienteControllerTest {
     @Test
     @DisplayName("Deve retornar erro 400 quando país não encontrado")
     void deveRetornarErro400QuandoEstadoNaoEncontrado() throws Exception {
-        NovoClienteRequest novoClienteRequest = NovoClienteRequestBuilder.umCliente().comIdEstado(999L).build();
+        NovoPagamentoRequest novoPagamentoRequest = NovoPagamentoRequestBuilder.umPagamento().comIdEstado(999L).build();
 
-        mockMvc.perform(post("/v1/clientes")
+        mockMvc.perform(post("/v1/pagamentos")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(novoClienteRequest)))
+                        .content(objectMapper.writeValueAsString(novoPagamentoRequest)))
                 .andExpect(status().isBadRequest());
     }
 
@@ -133,14 +133,14 @@ class NovoClienteControllerTest {
         Estado estado = NovoEstadoRequestBuilder.umEstado().comIdPais(pais.getId()).build().toModel(paisRepository);
         estadoRepository.save(estado);
 
-        NovoClienteRequest novoClienteRequest = NovoClienteRequestBuilder.umCliente()
+        NovoPagamentoRequest novoPagamentoRequest = NovoPagamentoRequestBuilder.umPagamento()
                 .comIdPais(pais.getId())
                 .comIdEstado(999L).build();
 
 
-        mockMvc.perform(post("/v1/clientes")
+        mockMvc.perform(post("/v1/pagamentos")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(novoClienteRequest)))
+                        .content(objectMapper.writeValueAsString(novoPagamentoRequest)))
                 .andExpect(jsonPath("$.listaErros[0].campo").value("idEstado"))
                 .andExpect(jsonPath("$.listaErros[0].erro").value("não encontrado"));
     }
@@ -153,14 +153,14 @@ class NovoClienteControllerTest {
         Estado estado = NovoEstadoRequestBuilder.umEstado().comIdPais(pais.getId()).build().toModel(paisRepository);
         estadoRepository.save(estado);
 
-        NovoClienteRequest novoClienteRequest = NovoClienteRequestBuilder.umCliente()
+        NovoPagamentoRequest novoPagamentoRequest = NovoPagamentoRequestBuilder.umPagamento()
                 .comIdPais(pais.getId())
                 .comIdEstado(null)
                 .build();
 
-        mockMvc.perform(post("/v1/clientes")
+        mockMvc.perform(post("/v1/pagamentos")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(novoClienteRequest)))
+                        .content(objectMapper.writeValueAsString(novoPagamentoRequest)))
                 .andExpect(status().isBadRequest());
     }
 
@@ -172,15 +172,15 @@ class NovoClienteControllerTest {
         Estado estado = NovoEstadoRequestBuilder.umEstado().comIdPais(pais.getId()).build().toModel(paisRepository);
         estadoRepository.save(estado);
 
-        NovoClienteRequest novoClienteRequest = NovoClienteRequestBuilder.umCliente()
+        NovoPagamentoRequest novoPagamentoRequest = NovoPagamentoRequestBuilder.umPagamento()
                 .comIdPais(pais.getId())
                 .comIdEstado(null)
                 .build();
 
-        mockMvc.perform(post("/v1/clientes")
+        mockMvc.perform(post("/v1/pagamentos")
                         .header("Accept-Language", "pt-BR")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(novoClienteRequest)))
+                        .content(objectMapper.writeValueAsString(novoPagamentoRequest)))
                 .andExpect(jsonPath("$.listaErros[0].campo").value("idEstado"))
                 .andExpect(jsonPath("$.listaErros[0].erro").value("não deve ser nulo"));
     }
@@ -197,14 +197,14 @@ class NovoClienteControllerTest {
         Estado estado2 = NovoEstadoRequestBuilder.umEstado().comNome("Catamarca").comIdPais(pais2.getId()).build().toModel(paisRepository);
         estadoRepository.save(estado2);
 
-        NovoClienteRequest novoClienteRequest = NovoClienteRequestBuilder.umCliente()
+        NovoPagamentoRequest novoPagamentoRequest = NovoPagamentoRequestBuilder.umPagamento()
                 .comIdPais(pais1.getId())
                 .comIdEstado(estado2.getId())
                 .build();
 
-        mockMvc.perform(post("/v1/clientes")
+        mockMvc.perform(post("/v1/pagamentos")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(novoClienteRequest)))
+                        .content(objectMapper.writeValueAsString(novoPagamentoRequest)))
                 .andExpect(status().isBadRequest());
     }
 
@@ -220,14 +220,14 @@ class NovoClienteControllerTest {
         Estado estado2 = NovoEstadoRequestBuilder.umEstado().comNome("Catamarca").comIdPais(pais2.getId()).build().toModel(paisRepository);
         estadoRepository.save(estado2);
 
-        NovoClienteRequest novoClienteRequest = NovoClienteRequestBuilder.umCliente()
+        NovoPagamentoRequest novoPagamentoRequest = NovoPagamentoRequestBuilder.umPagamento()
                 .comIdPais(pais2.getId())
                 .comIdEstado(estado1.getId())
                 .build();
 
-        mockMvc.perform(post("/v1/clientes")
+        mockMvc.perform(post("/v1/pagamentos")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(novoClienteRequest)))
+                        .content(objectMapper.writeValueAsString(novoPagamentoRequest)))
                 .andExpect(jsonPath("$.listaErros[0].campo").value("idEstado"))
                 .andExpect(jsonPath("$.listaErros[0].erro").value("não pertence a este País"));
     }
@@ -235,57 +235,57 @@ class NovoClienteControllerTest {
     static Stream<Arguments> fornecerDadosParaErrosHttpStatus() {
         return Stream.of(
                 Arguments.of(
-                        NovoClienteRequestBuilder.umCliente().comEmail(""),
+                        NovoPagamentoRequestBuilder.umPagamento().comEmail(""),
                         400,
                         "Email em branco"
                 ),
                 Arguments.of(
-                        NovoClienteRequestBuilder.umCliente().comEmail("email_email"),
+                        NovoPagamentoRequestBuilder.umPagamento().comEmail("email_email"),
                         400,
                         "Email mal formado"
                 ),
                 Arguments.of(
-                        NovoClienteRequestBuilder.umCliente().comNome(""),
+                        NovoPagamentoRequestBuilder.umPagamento().comNome(""),
                         400,
                         "Nome não deve estar em branco"
                 ),
                 Arguments.of(
-                        NovoClienteRequestBuilder.umCliente().comSobreNome(""),
+                        NovoPagamentoRequestBuilder.umPagamento().comSobreNome(""),
                         400,
                         "Sobrenome não deve estar em branco"
                 ),
                 Arguments.of(
-                        NovoClienteRequestBuilder.umCliente().comCpfCnpj("123456"),
+                        NovoPagamentoRequestBuilder.umPagamento().comCpfCnpj("123456"),
                         400,
                         "CpfCnpj inválido"
                 ),
                 Arguments.of(
-                        NovoClienteRequestBuilder.umCliente().comEndereco(""),
+                        NovoPagamentoRequestBuilder.umPagamento().comEndereco(""),
                         400,
                         "Endereço não pode estar em branco"
                 ),
                 Arguments.of(
-                        NovoClienteRequestBuilder.umCliente().comComplemento(""),
+                        NovoPagamentoRequestBuilder.umPagamento().comComplemento(""),
                         400,
                         "Complemento não deve estar em branco"
                 ),
                 Arguments.of(
-                        NovoClienteRequestBuilder.umCliente().comCidade(""),
+                        NovoPagamentoRequestBuilder.umPagamento().comCidade(""),
                         400,
                         "Cidade não deve estar em branco"
                 ),
                 Arguments.of(
-                        NovoClienteRequestBuilder.umCliente().comIdPais(null),
+                        NovoPagamentoRequestBuilder.umPagamento().comIdPais(null),
                         400,
                         "IdPais não deve ser nulo"
                 ),
                 Arguments.of(
-                        NovoClienteRequestBuilder.umCliente().comTelefone(""),
+                        NovoPagamentoRequestBuilder.umPagamento().comTelefone(""),
                         400,
                         "Telefone não deve estar em branco"
                 ),
                 Arguments.of(
-                        NovoClienteRequestBuilder.umCliente().comCep(""),
+                        NovoPagamentoRequestBuilder.umPagamento().comCep(""),
                         400,
                         "CEP não deve estar em branco"
                 )
@@ -295,67 +295,61 @@ class NovoClienteControllerTest {
     static Stream<Arguments> fornecerDadosParaMensagensErro() {
         return Stream.of(
                 Arguments.of(
-                        NovoClienteRequestBuilder.umCliente().comEmail(""),
+                        NovoPagamentoRequestBuilder.umPagamento().comEmail(""),
                         "email",
                         "não deve estar em branco",
                         "Email em branco"
                 ),
                 Arguments.of(
-                        NovoClienteRequestBuilder.umCliente().comEmail("email_email"),
+                        NovoPagamentoRequestBuilder.umPagamento().comEmail("email_email"),
                         "email",
                         "deve ser um endereço de e-mail bem formado",
                         "Email mal formado"
                 ),
                 Arguments.of(
-                        NovoClienteRequestBuilder.umCliente().comNome(""),
+                        NovoPagamentoRequestBuilder.umPagamento().comNome(""),
                         "nome",
                         "não deve estar em branco",
                         "Nome não deve estar em branco"
                 ),
                 Arguments.of(
-                        NovoClienteRequestBuilder.umCliente().comSobreNome(""),
+                        NovoPagamentoRequestBuilder.umPagamento().comSobreNome(""),
                         "sobreNome",
                         "não deve estar em branco",
                         "Sobrenome não deve estar em branco"
                 ),
                 Arguments.of(
-                        NovoClienteRequestBuilder.umCliente().comCpfCnpj("123"),
+                        NovoPagamentoRequestBuilder.umPagamento().comCpfCnpj("123"),
                         "cpfCnpj",
                         "inválido. Utilize o formato 999.999.999-99 para CPF ou 99.999.999/9999-99 para CNPJ",
                         "CPF ou CNPJ não deve estar em branco"
                 ),
                 Arguments.of(
-                        NovoClienteRequestBuilder.umCliente().comEndereco(""),
+                        NovoPagamentoRequestBuilder.umPagamento().comEndereco(""),
                         "endereco",
                         "não deve estar em branco",
                         "Endereço não pode estar em branco"
                 ),
                 Arguments.of(
-                        NovoClienteRequestBuilder.umCliente().comComplemento(""),
+                        NovoPagamentoRequestBuilder.umPagamento().comComplemento(""),
                         "complemento",
                         "não deve estar em branco",
                         "Complemento não deve estar em branco"
                 ),
                 Arguments.of(
-                        NovoClienteRequestBuilder.umCliente().comCidade(""),
+                        NovoPagamentoRequestBuilder.umPagamento().comCidade(""),
                         "cidade",
                         "não deve estar em branco",
                         "Cidade não deve estar em branco"
                 ),
-//                Arguments.of(
-//                        NovoClienteRequestBuilder.umCliente().comIdPais(null),
-//                        "idPais",
-//                        "não deve ser nulo",
-//                        "IdPais não deve ser nulo"
-//                ),
                 Arguments.of(
-                        NovoClienteRequestBuilder.umCliente().comTelefone(""),
+                        NovoPagamentoRequestBuilder.umPagamento().comTelefone(""),
                         "telefone",
                         "não deve estar em branco",
                         "Telefone não deve estar em branco"
                 ),
                 Arguments.of(
-                        NovoClienteRequestBuilder.umCliente().comCep(""),
+                        NovoPagamentoRequestBuilder.umPagamento().comCep(""),
                         "cep",
                         "não deve estar em branco",
                         "CEP não deve estar em branco"

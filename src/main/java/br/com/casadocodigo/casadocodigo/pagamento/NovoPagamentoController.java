@@ -1,4 +1,4 @@
-package br.com.casadocodigo.casadocodigo.cliente;
+package br.com.casadocodigo.casadocodigo.pagamento;
 
 import br.com.casadocodigo.casadocodigo.estado.EstadoRepository;
 import br.com.casadocodigo.casadocodigo.pais.PaisRepository;
@@ -11,19 +11,19 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class NovoClienteController {
+public class NovoPagamentoController {
     private final PaisRepository paisRepository;
     private final EstadoRepository estadoRepository;
 
-    public NovoClienteController(PaisRepository paisRepository, EstadoRepository estadoRepository) {
+    public NovoPagamentoController(PaisRepository paisRepository, EstadoRepository estadoRepository) {
         this.paisRepository = paisRepository;
         this.estadoRepository = estadoRepository;
     }
 
-    @PostMapping("/v1/clientes")
+    @PostMapping("/v1/pagamentos")
     @Transactional
-    public ResponseEntity<?> cadastrar(@Valid @RequestBody NovoClienteRequest novoClienteRequest) throws MethodArgumentNotValidException, NoSuchMethodException {
-        Cliente cliente = novoClienteRequest.toModel(paisRepository, estadoRepository);
+    public ResponseEntity<?> cadastrar(@Valid @RequestBody NovoPagamentoRequest novoPagamentoRequest) throws MethodArgumentNotValidException, NoSuchMethodException {
+        Pagamento pagamento = novoPagamentoRequest.toModel(paisRepository, estadoRepository);
         return ResponseEntity.ok().build();
     }
 }
