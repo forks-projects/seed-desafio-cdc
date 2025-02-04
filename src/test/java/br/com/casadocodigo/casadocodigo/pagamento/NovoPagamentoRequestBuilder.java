@@ -1,5 +1,8 @@
 package br.com.casadocodigo.casadocodigo.pagamento;
 
+import java.math.BigDecimal;
+import java.util.List;
+
 public class NovoPagamentoRequestBuilder {
     private String email;
     private String nome;
@@ -12,6 +15,8 @@ public class NovoPagamentoRequestBuilder {
     private String cep;
     private Long idPais;
     private Long idEstado;
+    private BigDecimal total;
+    private List<NovoItemRequest> itens;
 
     public NovoPagamentoRequestBuilder() {
         this.email = "cliente@teste.com";
@@ -27,6 +32,8 @@ public class NovoPagamentoRequestBuilder {
         this.cep = "12345-678";
         this.idPais = 1L;
         this.idEstado = null;
+        this.total = BigDecimal.ONE;
+        this.itens = List.of(new NovoItemRequest(1L, 10));
     }
 
     public NovoPagamentoRequestBuilder comEmail(String email) {
@@ -84,13 +91,23 @@ public class NovoPagamentoRequestBuilder {
         return this;
     }
 
+    public NovoPagamentoRequestBuilder comTotal(BigDecimal total) {
+        this.total = total;
+        return this;
+    }
+
+    public NovoPagamentoRequestBuilder comItens(List<NovoItemRequest> itens) {
+        this.itens = itens;
+        return this;
+    }
+
     public static NovoPagamentoRequestBuilder umPagamento() {
         return new NovoPagamentoRequestBuilder();
     }
 
     public NovoPagamentoRequest build() {
         return new NovoPagamentoRequest(
-                email, nome, sobreNome, cpfCnpj, endereco, complemento, telefone, cep, cidade, idPais, idEstado
+                email, nome, sobreNome, cpfCnpj, endereco, complemento, telefone, cep, cidade, idPais, idEstado, total, itens
         );
     }
 }

@@ -2,17 +2,25 @@ package br.com.casadocodigo.casadocodigo.pagamento;
 
 import br.com.casadocodigo.casadocodigo.estado.Estado;
 import br.com.casadocodigo.casadocodigo.estado.EstadoRepository;
+import br.com.casadocodigo.casadocodigo.livro.LivroRepository;
 import br.com.casadocodigo.casadocodigo.pais.Pais;
 import br.com.casadocodigo.casadocodigo.pais.PaisRepository;
 import br.com.casadocodigo.casadocodigo.share.DocumentoValido;
 import br.com.casadocodigo.casadocodigo.share.EstadoValido;
 import br.com.casadocodigo.casadocodigo.share.ExisteId;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 @EstadoValido
 public class NovoPagamentoRequest {
@@ -51,6 +59,15 @@ public class NovoPagamentoRequest {
 
     private Long idEstado;
 
+    @NotNull
+    @Min(value = 1)
+    private BigDecimal total;
+
+    @Size(min = 1, message = "deve ter pelo menos 1 item")
+    @NotNull
+    @Valid
+    private List<NovoItemRequest> itensRequest = new ArrayList<>();
+
     public NovoPagamentoRequest(@NotBlank @Email String email,
                                 @NotBlank String nome,
                                 @NotBlank String sobreNome,
@@ -61,7 +78,10 @@ public class NovoPagamentoRequest {
                                 @NotBlank String cep,
                                 @NotBlank String cidade,
                                 @NotNull Long idPais,
-                                Long idEstado) {
+                                Long idEstado,
+                                @NotNull @Min(value = 0) BigDecimal total,
+                                List<NovoItemRequest> itensRequest
+                                ) {
         this.email = email;
         this.nome = nome;
         this.sobreNome = sobreNome;
@@ -73,6 +93,8 @@ public class NovoPagamentoRequest {
         this.cidade = cidade;
         this.idPais = idPais;
         this.idEstado = idEstado;
+        this.total = total;
+        this.itensRequest = itensRequest;
     }
 
     public String getEmail() {
@@ -119,13 +141,23 @@ public class NovoPagamentoRequest {
         return idEstado;
     }
 
-    public Pagamento toModel(PaisRepository paisRepository, EstadoRepository estadoRepository) throws MethodArgumentNotValidException {
+    public BigDecimal getTotal() {
+        return total;
+    }
+
+    public List<NovoItemRequest> getItensRequest() {
+        return itensRequest;
+    }
+
+    public Pagamento toModel(PaisRepository paisRepository, EstadoRepository estadoRepository, LivroRepository livroRepository) throws MethodArgumentNotValidException {
         Pais pais = paisRepository.findById(idPais).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "País não encontrado")
         );
         Estado estado = estadoRepository.findById(idEstado).orElseThrow(
                 ()-> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Estado não encontrado")
         );
+
+        List<Item> itens = itensRequest.stream().map(itemRequest -> itemRequest.toModel(livroRepository)).toList();
 
         return new Pagamento(
                 email,
@@ -138,7 +170,9 @@ public class NovoPagamentoRequest {
                 cep,
                 cidade,
                 pais,
-                estado
+                estado,
+                total,
+                itens
         );
     }
 }
