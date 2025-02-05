@@ -105,4 +105,12 @@ public class Pagamento {
     public List<Item> getItens() {
         return itens;
     }
+
+    public BigDecimal getTotal() {
+        return total;
+    }
+
+    public boolean isTotalIgualServidor(BigDecimal total) {
+        return this.total.equals(total);
+    }
 }

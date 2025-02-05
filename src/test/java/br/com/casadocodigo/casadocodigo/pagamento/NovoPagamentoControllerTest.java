@@ -76,6 +76,7 @@ class NovoPagamentoControllerTest {
         Livro livro = NovoLivroRequestDataBuilder.umLivro()
                 .comIdCategoria(categoria.getId())
                 .comIdAutor(autor.getId())
+                .comPreco(new BigDecimal("30"))
                 .build()
                 .toModel(categoriaRepository, autorRepository);
         livroRepository.save(livro);
@@ -83,13 +84,14 @@ class NovoPagamentoControllerTest {
         NovoPagamentoRequest novoPagamentoRequest = NovoPagamentoRequestBuilder.umPagamento()
                 .comIdPais(pais.getId())
                 .comIdEstado(estado.getId())
-                .comItens(List.of(new NovoItemRequest(livro.getId(), 1)))
+                .comTotal(new BigDecimal("90"))
+                .comItens(List.of(new NovoItemRequest(livro.getId(), 3)))
                 .build();
 
         mockMvc.perform(post("/v1/pagamentos")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(novoPagamentoRequest)))
-                .andExpect(status().isOk());
+                .andExpect(status().isCreated());
     }
 
     @ParameterizedTest(name = "[{index}] {4}")
@@ -434,6 +436,53 @@ class NovoPagamentoControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.listaErros[0].campo").value("itensRequest[0].quantidade"))
                 .andExpect(jsonPath("$.listaErros[0].erro").value("deve ser maior que ou igual à 1"));
+    }
+
+    @Test
+    @DisplayName("Deve mostrar mensagem de erro quando pagamento com total calculado diferente do total enviado")
+    void deveMostrarMensagemDeErroQuandoPagamentoComTotalCalculadoServidorDiferenteTotalEnviado() throws Exception {
+        Pais pais = new Pais("Brasil");
+        paisRepository.save(pais);
+        Estado estado = NovoEstadoRequestBuilder.umEstado().comIdPais(pais.getId()).build().toModel(paisRepository);
+        estadoRepository.save(estado);
+        Categoria categoria = NovaCategoriaRequestDataBuilder.umaCategoria().build().toModel();
+        categoriaRepository.save(categoria);
+        Autor autor = NovoAutorRequestDataBuilder.umAutor().build().toModel();
+        autorRepository.save(autor);
+        Livro livro1 = NovoLivroRequestDataBuilder.umLivro()
+                .comIdCategoria(categoria.getId())
+                .comIdAutor(autor.getId())
+                .comPreco(new BigDecimal("20"))
+                .build()
+                .toModel(categoriaRepository, autorRepository);
+        livroRepository.save(livro1);
+        Livro livro2 = NovoLivroRequestDataBuilder.umLivro()
+                .comIdCategoria(categoria.getId())
+                .comIdAutor(autor.getId())
+                .comTitulo("Livro 2")
+                .comIsbn("123-123-123")
+                .comPreco(new BigDecimal("30"))
+                .build()
+                .toModel(categoriaRepository, autorRepository);
+        livroRepository.save(livro2);
+
+        NovoPagamentoRequest novoPagamentoRequest = NovoPagamentoRequestBuilder.umPagamento()
+                .comIdPais(pais.getId())
+                .comIdEstado(estado.getId())
+                .comTotal(new BigDecimal("10"))
+                .comItens(List.of(
+                        new NovoItemRequest(livro1.getId(), 1),
+                        new NovoItemRequest(livro2.getId(), 2))
+                )
+                .build();
+
+        mockMvc.perform(post("/v1/pagamentos")
+                        .header("Accept-Language", "pt-BR")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(novoPagamentoRequest)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.listaErros[0].campo").value("total"))
+                .andExpect(jsonPath("$.listaErros[0].erro").value("diferente do valor total calculado"));
     }
 
     static Stream<Arguments> fornecerDadosParaMensagensErro() {
