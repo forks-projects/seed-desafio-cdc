@@ -18,6 +18,7 @@ import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "pagamentos")
@@ -106,11 +107,14 @@ public class Pagamento {
         return itens;
     }
 
-    public BigDecimal getTotal() {
-        return total;
+    public boolean isTotalValido() {
+        BigDecimal totalCalculado = this.calcularTotalDosItens();
+        return Objects.equals(total, totalCalculado);
     }
 
-    public boolean isTotalIgualServidor(BigDecimal total) {
-        return this.total.equals(total);
+    private BigDecimal calcularTotalDosItens() {
+        return this.getItens().stream()
+                .map(item -> item.getLivro().getPreco().multiply(BigDecimal.valueOf(item.getQuantidade())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 }

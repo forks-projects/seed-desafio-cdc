@@ -49,7 +49,7 @@ public class Item {
         return quantidade;
     }
 
-    public void setPagamento(@NotNull Pagamento pagamento) {
+    public void associarPagamento(@NotNull Pagamento pagamento) {
         this.pagamento = pagamento;
     }
 }
