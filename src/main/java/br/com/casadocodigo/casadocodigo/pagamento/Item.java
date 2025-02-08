@@ -56,6 +56,10 @@ public class Item {
         return quantidade;
     }
 
+    public BigDecimal getPreco() {
+        return preco;
+    }
+
     public void associarPagamento(@NotNull Pagamento pagamento) {
         this.pagamento = pagamento;
     }

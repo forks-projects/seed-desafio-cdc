@@ -114,7 +114,7 @@ public class Pagamento {
 
     private BigDecimal calcularTotalDosItens() {
         return this.getItens().stream()
-                .map(item -> item.getLivro().getPreco().multiply(BigDecimal.valueOf(item.getQuantidade())))
+                .map(item -> item.getPreco().multiply(BigDecimal.valueOf(item.getQuantidade())))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 }
