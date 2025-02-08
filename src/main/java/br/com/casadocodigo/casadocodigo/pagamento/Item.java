@@ -11,6 +11,8 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
+import java.math.BigDecimal;
+
 @Entity
 @Table(name = "itens")
 public class Item {
@@ -32,12 +34,17 @@ public class Item {
     @Min(value = 1)
     private Integer quantidade;
 
+    @NotNull
+    @Min(value = 1)
+    private BigDecimal preco;
+
     public Item() {
     }
 
     public Item(Livro livro, @NotNull @Min(value = 1) Integer quantidade) {
         this.livro = livro;
         this.quantidade = quantidade;
+        this.preco = livro.getPreco();
     }
 
 
