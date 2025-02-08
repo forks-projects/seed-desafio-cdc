@@ -19,10 +19,11 @@ import java.time.LocalDate;
         @UniqueConstraint(name = "uc_codigo_cupom_desconto", columnNames = "codigo")
 })
 public class CupomDesconto {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+//    @Id
+//    @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    private Long id;
 
+    @Id
     @NotBlank
     private String codigo;
 
@@ -46,7 +47,7 @@ public class CupomDesconto {
         this.validade = validade;
     }
 
-    public Long getId() {
-        return id;
+    public String getCodigo() {
+        return codigo;
     }
 }

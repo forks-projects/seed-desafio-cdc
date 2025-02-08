@@ -23,7 +23,7 @@ public class NovoCupomDescontoController {
     public ResponseEntity<?> cadastrar(@Valid @RequestBody NovoCupomDescontoRequest novoCupomDescontoRequest, UriComponentsBuilder uriBuilder) {
         CupomDesconto cupomDesconto = novoCupomDescontoRequest.toModel();
         cupomDescontoRepository.save(cupomDesconto);
-        URI uri = uriBuilder.path("/v1/cupomDesconto/{id}").buildAndExpand(cupomDesconto.getId()).toUri();
+        URI uri = uriBuilder.path("/v1/cupomDesconto/{codigo}").buildAndExpand(cupomDesconto.getCodigo()).toUri();
         return ResponseEntity.created(uri).build();
     }
 }
