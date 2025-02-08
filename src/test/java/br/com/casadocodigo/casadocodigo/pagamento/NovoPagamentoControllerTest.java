@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -62,9 +63,11 @@ class NovoPagamentoControllerTest {
     @Autowired
     private LivroRepository livroRepository;
 
-    @Test
+//    @Test
     @DisplayName("Deve ter pagamento com dados validos")
-    void deveTerPagamentoComDadosValidos() throws Exception {
+    @ParameterizedTest
+    @ValueSource(strings = {"90.00", "90"})
+    void deveTerPagamentoComDadosValidos(String total) throws Exception {
         Pais pais = new Pais("Brasil");
         paisRepository.save(pais);
         Estado estado = NovoEstadoRequestBuilder.umEstado().comIdPais(pais.getId()).build().toModel(paisRepository);
@@ -84,7 +87,7 @@ class NovoPagamentoControllerTest {
         NovoPagamentoRequest novoPagamentoRequest = NovoPagamentoRequestBuilder.umPagamento()
                 .comIdPais(pais.getId())
                 .comIdEstado(estado.getId())
-                .comTotal(new BigDecimal("90"))
+                .comTotal(new BigDecimal(total))
                 .comItens(List.of(new NovoItemRequest(livro.getId(), 3)))
                 .build();
 

@@ -109,7 +109,7 @@ public class Pagamento {
 
     public boolean isTotalValido() {
         BigDecimal totalCalculado = this.calcularTotalDosItens();
-        return Objects.equals(total, totalCalculado);
+        return total.compareTo(totalCalculado) == 0;
     }
 
     private BigDecimal calcularTotalDosItens() {
