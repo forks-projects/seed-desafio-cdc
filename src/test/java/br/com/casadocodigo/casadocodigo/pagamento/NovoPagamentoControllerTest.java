@@ -6,6 +6,9 @@ import br.com.casadocodigo.casadocodigo.autor.NovoAutorRequestDataBuilder;
 import br.com.casadocodigo.casadocodigo.categoria.Categoria;
 import br.com.casadocodigo.casadocodigo.categoria.CategoriaRepository;
 import br.com.casadocodigo.casadocodigo.categoria.NovaCategoriaRequestDataBuilder;
+import br.com.casadocodigo.casadocodigo.cupom_desconto.CupomDesconto;
+import br.com.casadocodigo.casadocodigo.cupom_desconto.CupomDescontoRepository;
+import br.com.casadocodigo.casadocodigo.cupom_desconto.NovoCupomDescontoRequestBuilder;
 import br.com.casadocodigo.casadocodigo.estado.Estado;
 import br.com.casadocodigo.casadocodigo.estado.EstadoRepository;
 import br.com.casadocodigo.casadocodigo.estado.NovoEstadoRequestBuilder;
@@ -30,6 +33,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -63,7 +67,9 @@ class NovoPagamentoControllerTest {
     @Autowired
     private LivroRepository livroRepository;
 
-//    @Test
+    @Autowired
+    private CupomDescontoRepository cupomDescontoRepository;
+
     @DisplayName("Deve ter pagamento com dados validos")
     @ParameterizedTest
     @ValueSource(strings = {"90.00", "90"})
@@ -89,6 +95,41 @@ class NovoPagamentoControllerTest {
                 .comIdEstado(estado.getId())
                 .comTotal(new BigDecimal(total))
                 .comItens(List.of(new NovoItemRequest(livro.getId(), 3)))
+                .build();
+
+        mockMvc.perform(post("/v1/pagamentos")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(novoPagamentoRequest)))
+                .andExpect(status().isCreated());
+    }
+
+    @Test
+    @DisplayName("Deve ter pagamento com cupom desconto e dados validos")
+    void deveTerPagamentoComCupomDescontoEComDadosValidos() throws Exception {
+        Pais pais = new Pais("Brasil");
+        paisRepository.save(pais);
+        Estado estado = NovoEstadoRequestBuilder.umEstado().comIdPais(pais.getId()).build().toModel(paisRepository);
+        estadoRepository.save(estado);
+        Categoria categoria = NovaCategoriaRequestDataBuilder.umaCategoria().build().toModel();
+        categoriaRepository.save(categoria);
+        Autor autor = NovoAutorRequestDataBuilder.umAutor().build().toModel();
+        autorRepository.save(autor);
+        Livro livro = NovoLivroRequestDataBuilder.umLivro()
+                .comIdCategoria(categoria.getId())
+                .comIdAutor(autor.getId())
+                .comPreco(new BigDecimal("30"))
+                .build()
+                .toModel(categoriaRepository, autorRepository);
+        livroRepository.save(livro);
+        CupomDesconto cupomDesconto = NovoCupomDescontoRequestBuilder.umCupom().build().toModel();
+        cupomDescontoRepository.save(cupomDesconto);
+
+        NovoPagamentoRequest novoPagamentoRequest = NovoPagamentoRequestBuilder.umPagamento()
+                .comIdPais(pais.getId())
+                .comIdEstado(estado.getId())
+                .comTotal(new BigDecimal("90.00"))
+                .comItens(List.of(new NovoItemRequest(livro.getId(), 3)))
+                .comCupomDesconto(cupomDesconto.getCodigo())
                 .build();
 
         mockMvc.perform(post("/v1/pagamentos")
@@ -487,6 +528,47 @@ class NovoPagamentoControllerTest {
                 .andExpect(jsonPath("$.listaErros[0].campo").value("total"))
                 .andExpect(jsonPath("$.listaErros[0].erro").value("diferente do valor total calculado"));
     }
+
+    @Test
+    @DisplayName("Deve mostrar erro quando pagamento com cupom de desconto vencido")
+    void deveMostrarErroQuandoPagamentoComCupomDescontoVencido() throws Exception {
+        Pais pais = new Pais("Brasil");
+        paisRepository.save(pais);
+        Estado estado = NovoEstadoRequestBuilder.umEstado().comIdPais(pais.getId()).build().toModel(paisRepository);
+        estadoRepository.save(estado);
+        Categoria categoria = NovaCategoriaRequestDataBuilder.umaCategoria().build().toModel();
+        categoriaRepository.save(categoria);
+        Autor autor = NovoAutorRequestDataBuilder.umAutor().build().toModel();
+        autorRepository.save(autor);
+        Livro livro = NovoLivroRequestDataBuilder.umLivro()
+                .comIdCategoria(categoria.getId())
+                .comIdAutor(autor.getId())
+                .comPreco(new BigDecimal("30"))
+                .build()
+                .toModel(categoriaRepository, autorRepository);
+        livroRepository.save(livro);
+        CupomDesconto cupomDesconto = NovoCupomDescontoRequestBuilder.umCupom()
+                .comValidade(LocalDate.now().plusDays(1))
+                .build()
+                .toModel();
+        cupomDescontoRepository.save(cupomDesconto);
+
+        NovoPagamentoRequest novoPagamentoRequest = NovoPagamentoRequestBuilder.umPagamento()
+                .comIdPais(pais.getId())
+                .comIdEstado(estado.getId())
+                .comTotal(new BigDecimal("90"))
+                .comItens(List.of(new NovoItemRequest(livro.getId(), 3)))
+                .comCupomDesconto("CUPOMVENCIDO")
+                .build();
+
+        mockMvc.perform(post("/v1/pagamentos")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(novoPagamentoRequest)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.listaErros[0].campo").value("cupomDesconto"))
+                .andExpect(jsonPath("$.listaErros[0].erro").value("está vencido"));
+    }
+
 
     static Stream<Arguments> fornecerDadosParaMensagensErro() {
         return Stream.of(

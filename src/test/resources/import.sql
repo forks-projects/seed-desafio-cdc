@@ -1,0 +1,1 @@
+insert into cupons_desconto (codigo, percentual_desconto, validade) values ('CUPOMVENCIDO', 10.00,'2023-01-01')

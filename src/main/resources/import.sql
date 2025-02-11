@@ -11,3 +11,6 @@ INSERT INTO paises (id, nome) VALUES (default, 'Brasil');
 INSERT INTO paises (id, nome) VALUES (default, 'Argentina');
 INSERT INTO estados (id, nome, pais_id) VALUES (default, 'São Paulo', 1);
 INSERT INTO estados (id, nome, pais_id) VALUES (default, 'Catamarca', 2);
+
+insert into cupons_desconto (codigo, percentual_desconto, validade) values ('CUPOMVENCIDO', 10.00, '2023-01-01')
+insert into cupons_desconto (codigo, percentual_desconto, validade) values ('CUPOM10', 10.00, '2050-01-01')

@@ -1,10 +1,13 @@
 package br.com.casadocodigo.casadocodigo.pagamento;
 
+import br.com.casadocodigo.casadocodigo.cupom_desconto.CupomDesconto;
+import br.com.casadocodigo.casadocodigo.cupom_desconto.CupomDescontoRepository;
 import br.com.casadocodigo.casadocodigo.estado.Estado;
 import br.com.casadocodigo.casadocodigo.estado.EstadoRepository;
 import br.com.casadocodigo.casadocodigo.livro.LivroRepository;
 import br.com.casadocodigo.casadocodigo.pais.Pais;
 import br.com.casadocodigo.casadocodigo.pais.PaisRepository;
+import br.com.casadocodigo.casadocodigo.share.CumpomDescontoValido;
 import br.com.casadocodigo.casadocodigo.share.DocumentoValido;
 import br.com.casadocodigo.casadocodigo.share.EstadoValido;
 import br.com.casadocodigo.casadocodigo.share.ExisteId;
@@ -19,10 +22,13 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @EstadoValido
+@CumpomDescontoValido
 public class NovoPagamentoRequest {
     @NotBlank
     @Email
@@ -68,6 +74,11 @@ public class NovoPagamentoRequest {
     @Valid
     private List<NovoItemRequest> itensRequest = new ArrayList<>();
 
+    @ExisteId(classeDaEntidade = CupomDesconto.class, nomeDoCampo = "codigo", message = "Cupom de desconto não encontrado")
+    private String cupomDesconto;
+
+    private LocalDate dataPagamento;
+
     public NovoPagamentoRequest(@NotBlank @Email String email,
                                 @NotBlank String nome,
                                 @NotBlank String sobreNome,
@@ -80,7 +91,8 @@ public class NovoPagamentoRequest {
                                 @NotNull Long idPais,
                                 Long idEstado,
                                 @NotNull @Min(value = 0) BigDecimal total,
-                                List<NovoItemRequest> itensRequest
+                                List<NovoItemRequest> itensRequest,
+                                String cupomDesconto
                                 ) {
         this.email = email;
         this.nome = nome;
@@ -95,6 +107,8 @@ public class NovoPagamentoRequest {
         this.idEstado = idEstado;
         this.total = total;
         this.itensRequest = itensRequest;
+        this.cupomDesconto = cupomDesconto;
+        this.dataPagamento = LocalDate.now();
     }
 
     public String getEmail() {
@@ -149,13 +163,32 @@ public class NovoPagamentoRequest {
         return itensRequest;
     }
 
-    public Pagamento toModel(PaisRepository paisRepository, EstadoRepository estadoRepository, LivroRepository livroRepository) throws MethodArgumentNotValidException {
+    public String getCupomDesconto() {
+        return cupomDesconto;
+    }
+
+    public LocalDate getDataPagamento() {
+        return dataPagamento;
+    }
+
+    public Pagamento toModel(PaisRepository paisRepository,
+                             EstadoRepository estadoRepository,
+                             LivroRepository livroRepository,
+                             CupomDescontoRepository cupomDescontoRepository) throws MethodArgumentNotValidException {
         Pais pais = paisRepository.findById(idPais).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "País não encontrado")
         );
         Estado estado = estadoRepository.findById(idEstado).orElseThrow(
                 ()-> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Estado não encontrado")
         );
+
+        CupomDesconto cupomDesconto1 = null;
+
+        if (!Objects.isNull(this.cupomDesconto)) {
+            cupomDesconto1 = cupomDescontoRepository.findById(cupomDesconto).orElseThrow(
+                    () -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cupom de descontro não encontrado")
+            );
+        }
 
         List<Item> itens = itensRequest.stream().map(itemRequest -> itemRequest.toModel(livroRepository)).toList();
 
@@ -172,7 +205,8 @@ public class NovoPagamentoRequest {
                 pais,
                 estado,
                 total,
-                itens
+                itens,
+                cupomDesconto1
         );
     }
 }

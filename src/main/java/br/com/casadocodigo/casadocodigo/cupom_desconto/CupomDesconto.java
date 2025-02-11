@@ -1,8 +1,6 @@
 package br.com.casadocodigo.casadocodigo.cupom_desconto;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
@@ -19,10 +17,6 @@ import java.time.LocalDate;
         @UniqueConstraint(name = "uc_codigo_cupom_desconto", columnNames = "codigo")
 })
 public class CupomDesconto {
-//    @Id
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
-//    private Long id;
-
     @Id
     @NotBlank
     private String codigo;
@@ -49,5 +43,9 @@ public class CupomDesconto {
 
     public String getCodigo() {
         return codigo;
+    }
+
+    public LocalDate getValidade() {
+        return validade;
     }
 }

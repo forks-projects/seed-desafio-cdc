@@ -17,6 +17,7 @@ public class NovoPagamentoRequestBuilder {
     private Long idEstado;
     private BigDecimal total;
     private List<NovoItemRequest> itens;
+    private String  cupomDesconto;
 
     public NovoPagamentoRequestBuilder() {
         this.email = "cliente@teste.com";
@@ -34,6 +35,7 @@ public class NovoPagamentoRequestBuilder {
         this.idEstado = null;
         this.total = BigDecimal.ONE;
         this.itens = List.of(new NovoItemRequest(1L, 10));
+        this.cupomDesconto = null;
     }
 
     public NovoPagamentoRequestBuilder comEmail(String email) {
@@ -101,13 +103,18 @@ public class NovoPagamentoRequestBuilder {
         return this;
     }
 
+    public NovoPagamentoRequestBuilder comCupomDesconto(String cupomDesconto) {
+        this.cupomDesconto = cupomDesconto;
+        return this;
+    }
+
     public static NovoPagamentoRequestBuilder umPagamento() {
         return new NovoPagamentoRequestBuilder();
     }
 
     public NovoPagamentoRequest build() {
         return new NovoPagamentoRequest(
-                email, nome, sobreNome, cpfCnpj, endereco, complemento, telefone, cep, cidade, idPais, idEstado, total, itens
+                email, nome, sobreNome, cpfCnpj, endereco, complemento, telefone, cep, cidade, idPais, idEstado, total, itens, cupomDesconto
         );
     }
 }

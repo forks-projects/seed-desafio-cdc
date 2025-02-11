@@ -1,5 +1,6 @@
 package br.com.casadocodigo.casadocodigo.pagamento;
 
+import br.com.casadocodigo.casadocodigo.cupom_desconto.CupomDescontoRepository;
 import br.com.casadocodigo.casadocodigo.estado.EstadoRepository;
 import br.com.casadocodigo.casadocodigo.livro.LivroRepository;
 import br.com.casadocodigo.casadocodigo.pais.PaisRepository;
@@ -14,16 +15,18 @@ public class PagamentoService {
     private final EstadoRepository estadoRepository;
     private final LivroRepository livroRepository;
     private final PagamentoRepository pagamentoRepository;
+    private final CupomDescontoRepository cupomDescontoRepository;
 
-    public PagamentoService(PaisRepository paisRepository, EstadoRepository estadoRepository, LivroRepository livroRepository, PagamentoRepository pagamentoRepository) {
+    public PagamentoService(PaisRepository paisRepository, EstadoRepository estadoRepository, LivroRepository livroRepository, PagamentoRepository pagamentoRepository, CupomDescontoRepository cupomDescontoRepository) {
         this.paisRepository = paisRepository;
         this.estadoRepository = estadoRepository;
         this.livroRepository = livroRepository;
         this.pagamentoRepository = pagamentoRepository;
+        this.cupomDescontoRepository = cupomDescontoRepository;
     }
 
     public Optional<Pagamento> salvar(NovoPagamentoRequest novoPagamentoRequest) throws MethodArgumentNotValidException {
-        Pagamento pagamento = novoPagamentoRequest.toModel(paisRepository, estadoRepository, livroRepository);
+        Pagamento pagamento = novoPagamentoRequest.toModel(paisRepository, estadoRepository, livroRepository, cupomDescontoRepository);
 
         if (pagamento.isTotalValido()) {
             pagamento.getItens().forEach(item -> item.associarPagamento(pagamento));

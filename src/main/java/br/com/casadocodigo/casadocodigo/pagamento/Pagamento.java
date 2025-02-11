@@ -1,5 +1,6 @@
 package br.com.casadocodigo.casadocodigo.pagamento;
 
+import br.com.casadocodigo.casadocodigo.cupom_desconto.CupomDesconto;
 import br.com.casadocodigo.casadocodigo.estado.Estado;
 import br.com.casadocodigo.casadocodigo.pais.Pais;
 import jakarta.annotation.Nullable;
@@ -8,6 +9,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
@@ -18,7 +21,6 @@ import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Objects;
 
 @Entity
 @Table(name = "pagamentos")
@@ -49,7 +51,6 @@ public class Pagamento {
     @NotBlank
     private String cidade;
 
-
     @NotBlank
     private String telefone;
 
@@ -71,6 +72,10 @@ public class Pagamento {
     @OneToMany(mappedBy = "pagamento", cascade = CascadeType.PERSIST, orphanRemoval = true)
     private List<Item> itens;
 
+    @ManyToOne
+    @JoinColumn(name = "cupons_desconto_codigo")
+    private CupomDesconto cupomDesconto;
+
     public Pagamento(@NotBlank @Email String email,
                      @NotBlank String nome,
                      @NotBlank String sobreNome,
@@ -83,7 +88,8 @@ public class Pagamento {
                      @NotNull Pais pais,
                      Estado estado,
                      @NotNull @Min(value = 1) BigDecimal total,
-                     List<Item> itens) {
+                     List<Item> itens,
+                     CupomDesconto cupomDesconto) {
         this.email = email;
         this.nome = nome;
         this.sobreNome = sobreNome;
@@ -97,6 +103,7 @@ public class Pagamento {
         this.estado = estado;
         this.total = total;
         this.itens = itens;
+        this.cupomDesconto = cupomDesconto;
     }
 
     public Long getId() {
