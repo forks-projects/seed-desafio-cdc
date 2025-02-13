@@ -12,7 +12,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Min;
@@ -20,6 +19,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 @Entity
@@ -58,10 +58,10 @@ public class Pagamento {
     private String cep;
 
     @NotNull
-    @OneToOne
+    @ManyToOne
     private Pais pais;
 
-    @OneToOne
+    @ManyToOne
     @Nullable
     private Estado estado;
 
@@ -75,6 +75,12 @@ public class Pagamento {
     @ManyToOne
     @JoinColumn(name = "cupons_desconto_codigo")
     private CupomDesconto cupomDesconto;
+
+    private LocalDate dataCompra = LocalDate.now();
+
+    @Deprecated
+    public Pagamento() {
+    }
 
     public Pagamento(@NotBlank @Email String email,
                      @NotBlank String nome,
@@ -110,6 +116,58 @@ public class Pagamento {
         return id;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public String getSobreNome() {
+        return sobreNome;
+    }
+
+    public String getCpfCnpj() {
+        return cpfCnpj;
+    }
+
+    public String getEndereco() {
+        return endereco;
+    }
+
+    public String getComplemento() {
+        return complemento;
+    }
+
+    public String getCidade() {
+        return cidade;
+    }
+
+    public String getTelefone() {
+        return telefone;
+    }
+
+    public String getCep() {
+        return cep;
+    }
+
+    public Pais getPais() {
+        return pais;
+    }
+
+    public Estado getEstado() {
+        return estado;
+    }
+
+    public BigDecimal getTotal() {
+        return total;
+    }
+
+    public CupomDesconto getCupomDesconto() {
+        return cupomDesconto;
+    }
+
     public List<Item> getItens() {
         return itens;
     }
@@ -119,9 +177,14 @@ public class Pagamento {
         return total.compareTo(totalCalculado) == 0;
     }
 
+    public LocalDate getDataCompra() {
+        return dataCompra;
+    }
+
     private BigDecimal calcularTotalDosItens() {
         return this.getItens().stream()
                 .map(item -> item.getPreco().multiply(BigDecimal.valueOf(item.getQuantidade())))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
+
 }
