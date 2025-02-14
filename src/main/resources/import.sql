@@ -9,8 +9,15 @@ INSERT INTO livros (id, autor_id, categoria_id, data_publicacao, isbn, numero_pa
 
 INSERT INTO paises (id, nome) VALUES (default, 'Brasil');
 INSERT INTO paises (id, nome) VALUES (default, 'Argentina');
+INSERT INTO paises (id, nome) VALUES (default, 'Filipinas');
+
 INSERT INTO estados (id, nome, pais_id) VALUES (default, 'São Paulo', 1);
 INSERT INTO estados (id, nome, pais_id) VALUES (default, 'Catamarca', 2);
 
 insert into cupons_desconto (codigo, percentual_desconto, validade) values ('CUPOMVENCIDO', 10.00, '2023-01-01')
 insert into cupons_desconto (codigo, percentual_desconto, validade) values ('CUPOM10', 10.00, '2050-01-01')
+
+insert into pagamentos (cep, cidade, complemento, cpf_cnpj, cupons_desconto_codigo, email, endereco, estado_id, nome, pais_id, sobre_nome, telefone, total, data_compra) values ('12345-678', 'São Paulo', 'Apto 101', '704.724.660-62', 'CUPOM10', 'cliente@teste.com', 'Rua Teste, 123', 1, 'Nome Teste', 1, 'Sobrenome Teste', '(11) 99999-9999', 60.00, now());
+insert into itens (livro_id, pagamento_id, preco, quantidade) values (1, 1, 20.00, 3);
+insert into pagamentos (cep, cidade, complemento, cpf_cnpj, cupons_desconto_codigo, email, endereco, estado_id, nome, pais_id, sobre_nome, telefone, total, data_compra) values ('12345-678', 'Cebu', 'Apto 101', '704.724.660-62', null, 'cliente@teste.com', 'Rua Teste, 123', null, 'Nome Teste', 3, 'Sobrenome Teste', '(11) 99999-9999', 35.90, now());
+insert into itens (livro_id, pagamento_id, preco, quantidade) values (2, 2, 35.90, 1);

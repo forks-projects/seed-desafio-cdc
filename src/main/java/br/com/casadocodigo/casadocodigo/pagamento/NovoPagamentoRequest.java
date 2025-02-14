@@ -178,11 +178,15 @@ public class NovoPagamentoRequest {
         Pais pais = paisRepository.findById(idPais).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "País não encontrado")
         );
-        Estado estado = estadoRepository.findById(idEstado).orElseThrow(
-                ()-> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Estado não encontrado")
-        );
 
+        Estado estado = null;
         CupomDesconto cupomDesconto1 = null;
+
+        if(!Objects.isNull(idEstado)) {
+            estado = estadoRepository.findById(idEstado).orElseThrow(
+                    ()-> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Estado não encontrado")
+            );
+        }
 
         if (!Objects.isNull(this.cupomDesconto)) {
             cupomDesconto1 = cupomDescontoRepository.findById(cupomDesconto).orElseThrow(

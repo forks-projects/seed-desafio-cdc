@@ -40,6 +40,10 @@ public class Estado {
         return id;
     }
 
+    public String getNome() {
+        return nome;
+    }
+
     public Pais getPais() {
         return pais;
     }

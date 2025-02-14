@@ -6,6 +6,8 @@ import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -37,4 +39,11 @@ public class NovoPagamentoController {
         URI uri = uriBuilder.path("/v1/pagamentos/{id}").buildAndExpand(possivelPagamento.get().getId()).toUri();
         return ResponseEntity.created(uri).build();
     }
+
+    @GetMapping("/v1/pagamentos/{pagamentoId}")
+    public ResponseEntity<?> detalhes(@PathVariable("pagamentoId") Long pagamentoId) {
+        Pagamento pagamento = pagamentoService.buscarDetalhePagamento(pagamentoId);
+        return ResponseEntity.ok(new PagamentoDetalheResponse(pagamento));
+    }
+
 }

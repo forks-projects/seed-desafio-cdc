@@ -4,8 +4,10 @@ import br.com.casadocodigo.casadocodigo.cupom_desconto.CupomDescontoRepository;
 import br.com.casadocodigo.casadocodigo.estado.EstadoRepository;
 import br.com.casadocodigo.casadocodigo.livro.LivroRepository;
 import br.com.casadocodigo.casadocodigo.pais.PaisRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Optional;
 
@@ -34,6 +36,14 @@ public class PagamentoService {
             return Optional.of(pagamento);
         }
         return Optional.empty();
+    }
+
+    public Pagamento buscarDetalhePagamento(Long pagamentoId) {
+        Optional<Pagamento> possivelPagamento = pagamentoRepository.findById(pagamentoId);
+        if (possivelPagamento.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Pagamento não encontrado");
+        }
+        return possivelPagamento.get();
     }
 }
 

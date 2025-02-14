@@ -35,8 +35,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -69,6 +71,9 @@ class NovoPagamentoControllerTest {
 
     @Autowired
     private CupomDescontoRepository cupomDescontoRepository;
+
+    @Autowired
+    private PagamentoService pagamentoService;
 
     @DisplayName("Deve ter pagamento com dados validos")
     @ParameterizedTest
@@ -130,6 +135,36 @@ class NovoPagamentoControllerTest {
                 .comTotal(new BigDecimal("90.00"))
                 .comItens(List.of(new NovoItemRequest(livro.getId(), 3)))
                 .comCupomDesconto(cupomDesconto.getCodigo())
+                .build();
+
+        mockMvc.perform(post("/v1/pagamentos")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(novoPagamentoRequest)))
+                .andExpect(status().isCreated());
+    }
+
+    @Test
+    @DisplayName("Deve ter pagamento com pais sem estado com dados validos")
+    void deveTerPagamentoComPaisSemEstadoComDadosValidos() throws Exception {
+        Pais pais = new Pais("Brasil");
+        paisRepository.save(pais);
+        Categoria categoria = NovaCategoriaRequestDataBuilder.umaCategoria().build().toModel();
+        categoriaRepository.save(categoria);
+        Autor autor = NovoAutorRequestDataBuilder.umAutor().build().toModel();
+        autorRepository.save(autor);
+        Livro livro = NovoLivroRequestDataBuilder.umLivro()
+                .comIdCategoria(categoria.getId())
+                .comIdAutor(autor.getId())
+                .comPreco(new BigDecimal("30"))
+                .build()
+                .toModel(categoriaRepository, autorRepository);
+        livroRepository.save(livro);
+
+        NovoPagamentoRequest novoPagamentoRequest = NovoPagamentoRequestBuilder.umPagamento()
+                .comIdPais(pais.getId())
+                .comIdEstado(null)
+                .comTotal(new BigDecimal("90.00"))
+                .comItens(List.of(new NovoItemRequest(livro.getId(), 3)))
                 .build();
 
         mockMvc.perform(post("/v1/pagamentos")
@@ -569,6 +604,87 @@ class NovoPagamentoControllerTest {
                 .andExpect(jsonPath("$.listaErros[0].erro").value("está vencido"));
     }
 
+    @Test
+    @DisplayName("Deve mostrar detalhes de pagamento COM cupom desconto")
+    void deveTerMostrarDetalhesDePagamentoComCupomDesconto() throws Exception {
+        Pais pais = new Pais("Brasil");
+        paisRepository.save(pais);
+        Estado estado = NovoEstadoRequestBuilder.umEstado().comIdPais(pais.getId()).build().toModel(paisRepository);
+        estadoRepository.save(estado);
+        Categoria categoria = NovaCategoriaRequestDataBuilder.umaCategoria().build().toModel();
+        categoriaRepository.save(categoria);
+        Autor autor = NovoAutorRequestDataBuilder.umAutor().build().toModel();
+        autorRepository.save(autor);
+        Livro livro = NovoLivroRequestDataBuilder.umLivro()
+                .comIdCategoria(categoria.getId())
+                .comIdAutor(autor.getId())
+                .comPreco(new BigDecimal("30"))
+                .build()
+                .toModel(categoriaRepository, autorRepository);
+        livroRepository.save(livro);
+        CupomDesconto cupomDesconto = NovoCupomDescontoRequestBuilder.umCupom().build().toModel();
+        cupomDescontoRepository.save(cupomDesconto);
+        NovoPagamentoRequest novoPagamentoRequest = NovoPagamentoRequestBuilder.umPagamento()
+                .comIdPais(pais.getId())
+                .comIdEstado(estado.getId())
+                .comTotal(new BigDecimal("90.00"))
+                .comItens(List.of(new NovoItemRequest(livro.getId(), 3)))
+                .comCupomDesconto(cupomDesconto.getCodigo())
+                .build();
+        Optional<Pagamento> pagamento = pagamentoService.salvar(novoPagamentoRequest);
+
+        mockMvc.perform(get("/v1/pagamentos/{id}", pagamento.get().getId())
+                        .contentType(MediaType.APPLICATION_JSON))
+                        .andExpect(status().isOk())
+                .andExpect(jsonPath("$.temDesconto").value(true))
+                .andExpect(jsonPath("$.totalComDesconto").value(new BigDecimal("81.0")))
+                .andExpect(jsonPath("$.valorDoDesconto").value(new BigDecimal("9.0")));
+    }
+
+    @Test
+    @DisplayName("Deve mostrar detalhes de pagamento SEM cupom desconto")
+    void deveTerMostrarDetalhesDePagamentoSemCupomDesconto() throws Exception {
+        Pais pais = new Pais("Brasil");
+        paisRepository.save(pais);
+        Estado estado = NovoEstadoRequestBuilder.umEstado().comIdPais(pais.getId()).build().toModel(paisRepository);
+        estadoRepository.save(estado);
+        Categoria categoria = NovaCategoriaRequestDataBuilder.umaCategoria().build().toModel();
+        categoriaRepository.save(categoria);
+        Autor autor = NovoAutorRequestDataBuilder.umAutor().build().toModel();
+        autorRepository.save(autor);
+        Livro livro = NovoLivroRequestDataBuilder.umLivro()
+                .comIdCategoria(categoria.getId())
+                .comIdAutor(autor.getId())
+                .comPreco(new BigDecimal("30"))
+                .build()
+                .toModel(categoriaRepository, autorRepository);
+        livroRepository.save(livro);
+        NovoPagamentoRequest novoPagamentoRequest = NovoPagamentoRequestBuilder.umPagamento()
+                .comIdPais(pais.getId())
+                .comIdEstado(estado.getId())
+                .comTotal(new BigDecimal("90.00"))
+                .comItens(List.of(new NovoItemRequest(livro.getId(), 3)))
+                .comCupomDesconto(null)
+                .build();
+        Optional<Pagamento> pagamento = pagamentoService.salvar(novoPagamentoRequest);
+
+        mockMvc.perform(get("/v1/pagamentos/{id}", pagamento.get().getId())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.temDesconto").value(false))
+                .andExpect(jsonPath("$.totalComDesconto").isEmpty())
+                .andExpect(jsonPath("$.valorDoDesconto").value(new BigDecimal("0")));
+    }
+
+    @Test
+    @DisplayName("Deve mostrar erro quando detalhes de pagamento não encontrado")
+    void deveTerMostrarErroQuandoDetalhePagamentoNaoEncontrado() throws Exception {
+        mockMvc.perform(get("/v1/pagamentos/{id}", 999999L)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.status").value(404))
+                .andExpect(jsonPath("$.erro").value("Pagamento não encontrado"));
+    }
 
     static Stream<Arguments> fornecerDadosParaMensagensErro() {
         return Stream.of(

@@ -45,6 +45,10 @@ public class CupomDesconto {
         return codigo;
     }
 
+    public BigDecimal getPercentualDesconto() {
+        return percentualDesconto;
+    }
+
     public LocalDate getValidade() {
         return validade;
     }
