@@ -286,3 +286,90 @@ PEGUE CADA UMA DAS CLASSES QUE VOCÊ CRIOU E REALIZE A CONTAGEM DA CARGA INTRÍN
 COMO ALBERTO FARIA ESSE CÓDIGO?
 
 UMA OUTRA SOLUÇÃO PARA A VALIDAÇÃO DO DOCUMENTO DO USUÁRIO.
+
+### Construa os testes relativos ao código escrito para o desafio
+https://dev-eficiente.memberkit.com.br/111379-design-e-arquitetura-de-software-para-devs-eficientes/2674004-construa-os-testes-relativos-ao-codigo-escrito-para-o-desafio
+
+#### 📌 Pré-requisito  
+
+Você precisa ter consumido uma teoria equivalente à combinação dos dois módulos de testes:  
+
+1. **Testes Automatizados Reveladores de Bugs**  
+2. **Testes de Software para Devs: Princípios, Práticas, e Dicas Direto das Trincheiras**  
+
+---
+
+#### 🎯 Descrição do Sistema de Testes  
+
+O sistema de testes sugerido combina diferentes tipos de testes dentro da **pirâmide de testes**, utilizando **testes de unidade** e **testes de API** para maximizar a cobertura e detectar bugs rapidamente.  
+
+##### 🔍 Recapitulando o nosso sistema:  
+
+1️⃣ **Testes de unidade automatizados**  
+   - Devem cobrir **todos os métodos com branches ou condicionais explícitas**.  
+   - Combinação de técnicas para aumentar a qualidade dos testes.  
+
+2️⃣ **Testes de API**  
+   - Uso de técnicas como **Boundary Testing** e **Property Based Testing**.  
+   - Exploração dos caminhos completos do sistema com o máximo de valores possível.  
+
+3️⃣ **Self Testing**  
+   - Os métodos testam suas **pré-condições e pós-condições** automaticamente.  
+   - Interrupção do fluxo de execução caso parâmetros ou estados estejam inconsistentes.  
+
+📌 **Importante:** Essa é apenas uma sugestão. O essencial é ter um **sistema claro** para criar seus testes automatizados.  
+
+---
+
+#### 🚀 Desafio  
+
+Agora, crie os testes para o projeto **Casa do Código**.  
+
+- **Siga o sistema sugerido** ou defina um próprio.  
+- **Não cubra linhas aleatoriamente**, tenha um critério bem definido.  
+- Use o **feeling** para complementar uma abordagem já estabelecida.  
+
+---
+
+#### 📚 Informações de Suporte  
+
+✅ **Existe expressão condicional com valores?** → Utilize **Boundary Testing**.  
+
+✅ **Existe expressão condicional ou branch escrita por você?** → Utilize **MC/DC**.  
+
+✅ **Passou da borda externa?**  
+   - Os valores de parâmetros e estado do sistema devem estar válidos.  
+   - **Garanta pré-condições com Self Testing**.  
+
+✅ **Sobrou código sem branch ou expressão condicional?**  
+   - Ele pode ser alcançado através de testes mais integrados?  
+
+✅ **Sobrou código sem branch ou expressão condicional que não foi testado por unidade?**  
+   - **Talvez seja o caso de um Teste de API**, possivelmente combinado com **Property Based Testing**.  
+
+---
+
+#### ✅ Testes Automatizados Criados  
+
+##### 📌 Testes de unidade  
+
+- Testes relativos à classe **NovoLivroRequest** → [CONFIRA AQUI](#)  
+- Testes relativos à classe **Cupom** → [CONFIRA AQUI](#)  
+- Testes relativos à classe **NovaCompraRequest** → [CONFIRA AQUI](#)  
+- Testes relativos à classe **Pedido** → [CONFIRA AQUI](#)  
+- Testes relativos à classe **CupomValidoValidator** → [CONFIRA AQUI](#)  
+- Testes relativos à classe **EstadoPertencePaisValidator** → [CONFIRA AQUI](#)  
+
+##### 📌 Testes de API  
+
+- Explicação inicial sobre suporte do framework a testes de API → [CONFIRA AQUI](#)  
+- Testes de API **Autores** → [CONFIRA AQUI](#)  
+- Testes de API **Categorias** → [CONFIRA AQUI](#)  
+- Testes de API **Livros** → [CONFIRA AQUI](#)  
+- Testes de API **Detalhe do livro** → [CONFIRA AQUI](#)  
+- Testes de API **País e estados** → [CONFIRA AQUI](#)  
+- Testes de API **FechamentoCompra** → [CONFIRA AQUI](#)  
+- Testes de API **Cupom** → [CONFIRA AQUI](#)  
+
+##### 📌 Cobertura dos Testes  
+- Vamos agora olhar nossa cobertura → [CONFIRA AQUI](#)  
