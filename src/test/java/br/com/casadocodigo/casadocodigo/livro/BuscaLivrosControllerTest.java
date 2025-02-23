@@ -37,9 +37,6 @@ class BuscaLivrosControllerTest {
     private MockMvc mockMvc;
 
     @Autowired
-    private ObjectMapper objectMapper;
-
-    @Autowired
     private LivroRepository livroRepository;
 
     @Autowired
