@@ -1,4 +1,6 @@
-package br.com.casadocodigo.casadocodigo.estado;
+package br.com.casadocodigo.casadocodigo.integration.estado;
+
+import br.com.casadocodigo.casadocodigo.estado.NovoEstadoRequest;
 
 public class NovoEstadoRequestBuilder {
 

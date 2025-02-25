@@ -1,10 +1,13 @@
-package br.com.casadocodigo.casadocodigo.livro;
+package br.com.casadocodigo.casadocodigo.integration.livro;
 
 import br.com.casadocodigo.casadocodigo.autor.Autor;
 import br.com.casadocodigo.casadocodigo.autor.AutorRepository;
-import br.com.casadocodigo.casadocodigo.autor.NovoAutorRequestDataBuilder;
+import br.com.casadocodigo.casadocodigo.integration.autor.NovoAutorRequestDataBuilder;
 import br.com.casadocodigo.casadocodigo.categoria.Categoria;
 import br.com.casadocodigo.casadocodigo.categoria.CategoriaRepository;
+import br.com.casadocodigo.casadocodigo.livro.Livro;
+import br.com.casadocodigo.casadocodigo.livro.LivroRepository;
+import br.com.casadocodigo.casadocodigo.livro.NovoLivroRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;

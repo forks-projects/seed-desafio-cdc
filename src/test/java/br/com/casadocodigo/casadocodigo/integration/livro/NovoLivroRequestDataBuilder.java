@@ -1,7 +1,8 @@
-package br.com.casadocodigo.casadocodigo.livro;
+package br.com.casadocodigo.casadocodigo.integration.livro;
 
 import br.com.casadocodigo.casadocodigo.autor.Autor;
 import br.com.casadocodigo.casadocodigo.categoria.Categoria;
+import br.com.casadocodigo.casadocodigo.livro.NovoLivroRequest;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

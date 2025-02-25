@@ -1,4 +1,7 @@
-package br.com.casadocodigo.casadocodigo.pagamento;
+package br.com.casadocodigo.casadocodigo.integration.pagamento;
+
+import br.com.casadocodigo.casadocodigo.pagamento.NovoItemRequest;
+import br.com.casadocodigo.casadocodigo.pagamento.NovoPagamentoRequest;
 
 import java.math.BigDecimal;
 import java.util.List;

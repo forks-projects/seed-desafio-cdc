@@ -1,5 +1,8 @@
-package br.com.casadocodigo.casadocodigo.cupom_desconto;
+package br.com.casadocodigo.casadocodigo.integration.cupom_desconto;
 
+import br.com.casadocodigo.casadocodigo.cupom_desconto.CupomDesconto;
+import br.com.casadocodigo.casadocodigo.cupom_desconto.CupomDescontoRepository;
+import br.com.casadocodigo.casadocodigo.cupom_desconto.NovoCupomDescontoRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.DisplayName;

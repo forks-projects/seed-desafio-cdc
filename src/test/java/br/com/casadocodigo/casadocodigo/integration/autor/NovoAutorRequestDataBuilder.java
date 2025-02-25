@@ -1,4 +1,6 @@
-package br.com.casadocodigo.casadocodigo.autor;
+package br.com.casadocodigo.casadocodigo.integration.autor;
+
+import br.com.casadocodigo.casadocodigo.autor.NovoAutorRequest;
 
 public class NovoAutorRequestDataBuilder {
     private String nome = "Autor Padrão";

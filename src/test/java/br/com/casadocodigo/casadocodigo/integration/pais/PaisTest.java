@@ -1,5 +1,7 @@
-package br.com.casadocodigo.casadocodigo.pais;
+package br.com.casadocodigo.casadocodigo.integration.pais;
 
+import br.com.casadocodigo.casadocodigo.pais.NovoPaisRequest;
+import br.com.casadocodigo.casadocodigo.pais.PaisRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;

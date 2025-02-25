@@ -1,5 +1,8 @@
-package br.com.casadocodigo.casadocodigo.categoria;
+package br.com.casadocodigo.casadocodigo.integration.categoria;
 
+import br.com.casadocodigo.casadocodigo.categoria.Categoria;
+import br.com.casadocodigo.casadocodigo.categoria.CategoriaRepository;
+import br.com.casadocodigo.casadocodigo.categoria.NovaCategoriaRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.DisplayName;

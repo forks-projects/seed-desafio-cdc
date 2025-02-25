@@ -1,4 +1,6 @@
-package br.com.casadocodigo.casadocodigo.categoria;
+package br.com.casadocodigo.casadocodigo.integration.categoria;
+
+import br.com.casadocodigo.casadocodigo.categoria.NovaCategoriaRequest;
 
 public class NovaCategoriaRequestDataBuilder {
     private String nome = "Categoria Padrão";

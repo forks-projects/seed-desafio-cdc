@@ -1,5 +1,8 @@
-package br.com.casadocodigo.casadocodigo.autor;
+package br.com.casadocodigo.casadocodigo.integration.autor;
 
+import br.com.casadocodigo.casadocodigo.autor.Autor;
+import br.com.casadocodigo.casadocodigo.autor.AutorRepository;
+import br.com.casadocodigo.casadocodigo.autor.NovoAutorRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;

@@ -1,4 +1,6 @@
-package br.com.casadocodigo.casadocodigo.cupom_desconto;
+package br.com.casadocodigo.casadocodigo.integration.cupom_desconto;
+
+import br.com.casadocodigo.casadocodigo.cupom_desconto.NovoCupomDescontoRequest;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

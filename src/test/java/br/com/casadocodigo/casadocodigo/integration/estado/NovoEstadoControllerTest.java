@@ -1,5 +1,8 @@
-package br.com.casadocodigo.casadocodigo.estado;
+package br.com.casadocodigo.casadocodigo.integration.estado;
 
+import br.com.casadocodigo.casadocodigo.estado.Estado;
+import br.com.casadocodigo.casadocodigo.estado.EstadoRepository;
+import br.com.casadocodigo.casadocodigo.estado.NovoEstadoRequest;
 import br.com.casadocodigo.casadocodigo.pais.Pais;
 import br.com.casadocodigo.casadocodigo.pais.PaisRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
