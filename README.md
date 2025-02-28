@@ -1,5 +1,10 @@
 # Desafio Implementando uma loja de livros virtual
 
+Executar os testes e gerar relatório HTML:
+```bash
+mvn clean verify
+```
+
 ## Desafio 01: Implementando uma loja de livros virtual
 ### Setup do projeto
 ​Crie um novo projeto utilizando as tecnologias que você decidiu trabalhar. Lembre de escolher algo que você sinta que vai te ajudar na sua carreira! Abaixo algumas combinações que são famosas no mercado:
