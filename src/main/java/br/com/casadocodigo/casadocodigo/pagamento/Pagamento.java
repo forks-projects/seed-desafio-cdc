@@ -110,6 +110,7 @@ public class Pagamento {
         this.total = total;
         this.itens = itens;
         this.cupomDesconto = cupomDesconto;
+        itens.forEach(item -> item.associarPagamento(this));
     }
 
     public Long getId() {

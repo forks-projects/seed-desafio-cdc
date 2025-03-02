@@ -31,7 +31,6 @@ public class PagamentoService {
         Pagamento pagamento = novoPagamentoRequest.toModel(paisRepository, estadoRepository, livroRepository, cupomDescontoRepository);
 
         if (pagamento.isTotalValido()) {
-            pagamento.getItens().forEach(item -> item.associarPagamento(pagamento));
             pagamentoRepository.save(pagamento);
             return Optional.of(pagamento);
         }
