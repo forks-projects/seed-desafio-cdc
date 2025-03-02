@@ -66,6 +66,23 @@ class CupomDescontoValidatorUnitTest {
     }
 
     @Test
+    @DisplayName("Deve ser válido quando cupom vence no dia")
+    void deveSerValidoQuandoCupomVenceNoDia() {
+        NovoPagamentoRequest novoPagamentoRequest = NovoPagamentoRequestBuilder.umPagamento()
+                .comCupomDesconto("CUPOMJAVA")
+                .build();
+        CupomDesconto cupomDesconto = new CupomDesconto("CUPOMJAVA", BigDecimal.TEN, LocalDate.now());
+        when(entityManager.createQuery(contains("select cupom from CupomDesconto cupom"))).thenReturn(query);
+        when(query.getResultList()).thenReturn(List.of(cupomDesconto));
+        CupomDescontoValidoLocal cupomDescontoValidoLocal = new CupomDescontoValidoLocal();
+        cupomDescontoValidator.initialize(cupomDescontoValidoLocal);
+
+        boolean resultado = cupomDescontoValidator.isValid(novoPagamentoRequest, context);
+
+        assertTrue(resultado);
+    }
+
+    @Test
     @DisplayName("Deve ser válido quando está sem cupom")
     void deveSerValidoQuandoEstaSemCupom() {
         NovoPagamentoRequest novoPagamentoRequest = NovoPagamentoRequestBuilder.umPagamento()

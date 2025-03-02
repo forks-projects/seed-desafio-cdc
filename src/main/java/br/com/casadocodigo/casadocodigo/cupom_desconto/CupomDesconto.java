@@ -52,4 +52,8 @@ public class CupomDesconto {
     public LocalDate getValidade() {
         return validade;
     }
+
+    public boolean isValido() {
+        return this.validade.isBefore(LocalDate.now());
+    }
 }

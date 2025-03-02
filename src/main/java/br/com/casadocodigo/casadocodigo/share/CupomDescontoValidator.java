@@ -33,7 +33,7 @@ public class CupomDescontoValidator implements ConstraintValidator<CupomDesconto
             return false;
         }
         CupomDesconto cupomDesconto = (CupomDesconto) query.getResultList().get(0);
-        if (cupomDesconto.getValidade().isBefore(request.getDataPagamento())) {
+        if (cupomDesconto.isValido()) {
             message = "está vencido";
             constraintValidatorContext.disableDefaultConstraintViolation();
             constraintValidatorContext.buildConstraintViolationWithTemplate(message).addPropertyNode("cupomDesconto").addConstraintViolation();
