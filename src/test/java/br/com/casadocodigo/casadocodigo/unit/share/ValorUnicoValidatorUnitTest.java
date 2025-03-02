@@ -1,7 +1,6 @@
 package br.com.casadocodigo.casadocodigo.unit.share;
 
 import br.com.casadocodigo.casadocodigo.categoria.Categoria;
-import br.com.casadocodigo.casadocodigo.categoria.NovaCategoriaRequest;
 import br.com.casadocodigo.casadocodigo.share.ValorUnico;
 import br.com.casadocodigo.casadocodigo.share.ValorUnicoValidator;
 import jakarta.persistence.EntityManager;
@@ -12,9 +11,9 @@ import jdk.jfr.Category;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.List;
 
@@ -37,9 +36,7 @@ class ValorUnicoValidatorUnitTest {
         entityManager = mock(EntityManager.class);
         query = mock(Query.class);
         context = mock(ConstraintValidatorContext.class);
-        Field entityManagerField = ValorUnicoValidator.class.getDeclaredField("entityManager");
-        entityManagerField.setAccessible(true);
-        entityManagerField.set(valorUnicoValidator, entityManager);
+        ReflectionTestUtils.setField(valorUnicoValidator, "entityManager", entityManager);
     }
 
     @Test
