@@ -33,7 +33,7 @@ public class ExisteIdValidator implements ConstraintValidator<ExisteId, Object> 
         query.setParameter("pValorDoNomeDoCampo", valorDoNomeDoCampo);
 
         List resultList = query.getResultList();
-        Assert.isTrue(resultList.size() <=1, "aconteceu algo estranho e você tem mais de um " + classeDaEntidade + " com o atributo " + nomeDoCampo + " com o valor = " + valorDoNomeDoCampo);
+        Assert.isTrue(resultList.size() <= 1, "aconteceu algo estranho e você tem mais de um " + classeDaEntidade + " com o atributo " + nomeDoCampo + " com o valor = " + valorDoNomeDoCampo);
         return !resultList.isEmpty();
     }
 }

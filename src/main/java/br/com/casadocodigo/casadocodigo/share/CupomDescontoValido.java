@@ -10,10 +10,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 @Documented
-@Constraint(validatedBy = {CumpomDescontoValidator.class})
+@Constraint(validatedBy = {CupomDescontoValidator.class})
 @Target({ ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface CumpomDescontoValido {
+public @interface CupomDescontoValido {
     String message() default "está vencido";
 
     Class<?>[] groups() default { };

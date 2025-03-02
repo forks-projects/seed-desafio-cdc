@@ -7,7 +7,7 @@ import br.com.casadocodigo.casadocodigo.estado.EstadoRepository;
 import br.com.casadocodigo.casadocodigo.livro.LivroRepository;
 import br.com.casadocodigo.casadocodigo.pais.Pais;
 import br.com.casadocodigo.casadocodigo.pais.PaisRepository;
-import br.com.casadocodigo.casadocodigo.share.CumpomDescontoValido;
+import br.com.casadocodigo.casadocodigo.share.CupomDescontoValido;
 import br.com.casadocodigo.casadocodigo.share.DocumentoValido;
 import br.com.casadocodigo.casadocodigo.share.EstadoValido;
 import br.com.casadocodigo.casadocodigo.share.ExisteId;
@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.Objects;
 
 @EstadoValido
-@CumpomDescontoValido
+@CupomDescontoValido
 public class NovoPagamentoRequest {
     @NotBlank
     @Email

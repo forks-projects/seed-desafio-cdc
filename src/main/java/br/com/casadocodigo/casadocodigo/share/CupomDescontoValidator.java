@@ -11,14 +11,14 @@ import jakarta.validation.ConstraintValidatorContext;
 import java.util.Objects;
 
 
-public class CumpomDescontoValidator implements ConstraintValidator<CumpomDescontoValido, Object> {
+public class CupomDescontoValidator implements ConstraintValidator<CupomDescontoValido, Object> {
     private String message;
 
     @PersistenceContext
     private EntityManager entityManager;
 
     @Override
-    public void initialize(CumpomDescontoValido constraintAnnotation) {
+    public void initialize(CupomDescontoValido constraintAnnotation) {
         message = constraintAnnotation.message();
     }
 
@@ -27,7 +27,7 @@ public class CumpomDescontoValidator implements ConstraintValidator<CumpomDescon
         NovoPagamentoRequest request = (NovoPagamentoRequest) novoPagamentoRequest;
         if (Objects.isNull(request.getCupomDesconto())) return true;
         String jpql = "select cupom from CupomDesconto cupom where codigo = :pCodigo";
-        Query query = entityManager.createQuery(jpql, CupomDesconto.class);
+        Query query = entityManager.createQuery(jpql);
         query.setParameter("pCodigo", request.getCupomDesconto());
         if (query.getResultList().isEmpty()) {
             return false;

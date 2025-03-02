@@ -39,6 +39,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -400,7 +401,7 @@ class NovoPagamentoControllerTest {
         NovoPagamentoRequest novoPagamentoRequest = NovoPagamentoRequestBuilder.umPagamento()
                 .comIdPais(pais.getId())
                 .comIdEstado(estado.getId())
-                .comItens(List.of())
+                .comItens(Collections.emptyList())
                 .build();
 
         mockMvc.perform(post("/v1/pagamentos")
